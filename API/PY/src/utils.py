@@ -1,4 +1,4 @@
-import datetime, enum
+import os, datetime, enum
 
 search_db       = "logs/search.log"
 visit_db        = "logs/visit.log"
@@ -23,13 +23,13 @@ class Logger():
     @staticmethod
     def NewLog(log: LogType, app: AppType, ipaddr: str, *args: str) -> bool:
         if log == LogType.Visit:
-            LogVisit(ValidateType(log), ipaddr);
+            Logger.LogVisit(Logger.ValidateType(app), ipaddr);
         elif log == LogType.Search:
             if len(args) != 1: return False;
-            LogSearch(ValidateType(log), ipaddr, args[0]);
+            Logger.LogSearch(Logger.ValidateType(app), ipaddr, args[0]);
         elif log == LogType.Request:
             if len(args) != 2: return False;
-            LogRequest(ValidateType(log), ipaddr, args[0], args[1]);
+            Logger.LogRequest(Logger.ValidateType(app), ipaddr, args[0], args[1]);
 
         return True;
 
@@ -75,3 +75,5 @@ class Logger():
         file.write(f"('{fromApp}','{ipaddr}','{item_id}','{new_price}','{Utils.get_date_n_time()}')\n");
         file.close();
         return True;
+
+Logger().NewLog(LogType.Visit, AppType.Desktop, "7.7.7.7", "Cupids Bow");
