@@ -4,7 +4,8 @@ from src.items import *
 from src.utils import *
 
 class Config:
-    prefix = "."
+    admins = ['1099019888145727488', '1100211506576097360', '908558131414597634', '364049733058297866', '1085795101730689046', '264271565087178753', '931025746682601483', '1090225338182815744']
+    prefix = "!"
     help_list = {"List of help commands ( This Message )": [f"{prefix}help", False],
                  "Item Search": [f"{prefix}item <item_name/id>", False],
                  "Advance Item Search": [f"{prefix}ai <item_id>", False],
@@ -13,18 +14,10 @@ class Config:
                  "FS Post": [f"{prefix}fs <item_id> <selling_for_price>", False],
                  "PC Post": [f"{prefix}pc <item_id>", False]}
 
-def _getItemInfo(item_id: str) -> str:
-    try:
-        item_data = requests.get(f"https://api.yoworld.info/api/items/{item_id}").text
-        json_data = json.loads(item_data)['data']['item']['price_proposals']
-        return f"{json_data[0]}".replace("{", "").replace("}", "").replace("\':\'", ": ").replace("'", "").replace(", ", "\n").split("\n")[6].replace("price: ", "").strip()
-    except:
-        return "n/a"
-
 class MyClient(discord.Client):
     async def on_ready(self):
         print(f"[ + ] {self.user} successfully loaded up.....")
-        
+
     async def on_message(self, message):
         msg = message.content
         msg_args = (message.content).split(" ")
@@ -41,14 +34,49 @@ class MyClient(discord.Client):
             """ Help Command """
             await self.client.send_embed_w_fields("Help", "List Of Commands!", Config.help_list, "")
 
+        # if f"{Config.prefix}kick": 
+        #     # user = discord.utils.get(message.guild.members, id=f"{msg_args[1]}")
+        #     # await message.guild.kick(user, reason='Kicked By YoMarket')
+        #     # await message.channel.send("User Kicked")
+
+        #     guild = await client.fetch_guild('1088677293997690961')
+        #     member = await guild.fetch_member('908558131414597634')
+        #     await member.kick(reason='Fuck right off')
+
+        # if f"{Config.prefix}selfrole":
+        #     # member = message.author
+        #     # role = get(message.guild.roles, name = "CEO")
+        #     # await member.add_roles(role, atomic=True)
+        #     guild = ctx.guild # You can remove this if you don't need it for something other
+        #     role = ctx.guild.get_role(1088694804097028147)
+        #     await message.author.add_roles(role)
+
+
+        if f"{Config.prefix}change" in msg:
+            """ Change Item Price Command """
+            if not f"{message.author.id}" in Config.admins: 
+                await self.client.send_embed_w_fields("Price Change | Error", f"You do not have access to this command....! Contact the owner for access", {}, "");
+                return;
+            if len(msg_args) != 3:
+                await self.client.send_embed_w_fields("Price Change | Error", f"Invalid arguments provided....!\nExample Usage: {Config.prefix}change 26295 300m", {}, "");
+                return
+            item_id = msg_args[1];
+            new_price = msg_args[2];
+            eng = YoworldItems();
+            check_change = eng.change_price(item_id, new_price);
+            if check_change == False:
+                await self.client.send_embed_w_fields("Price Change | Error", f"[x] Something went wrong changing item price....!\nContact owner for more details.....", {}, "");
+                return;
+            await self.client.send_embed_w_fields("Price Change", "Item has been successfully updated.....!", {}, "");
+
         elif f"{Config.prefix}search" in msg:
             """ Search Command """
             name = msg.replace(f"{msg_args[0]} ", "")
             if len(msg_args) < 2:
                 await self.client.send_embed_w_fields("Search Error", f"Invalid item name or ID provided....!\n__Usage:__ ``{Config.prefix}search <item_name/id>", {}, "")
 
-            """ ITEM SEARCH BY NAME """
             found = YoworldItems.searchItems(name)
+            await self.client.send_embed_w_fields("Search", "Searching, please wait.....!", {}, "")
             if len(found) == 0: 
                 return (await self.client.send_embed_w_fields("Search", "No items were found....!", {}, ""))
 
@@ -66,11 +94,13 @@ class MyClient(discord.Client):
                     c += 1
 
                 await self.client.send_embed_w_fields("Search", f"A List Of  The {len(found)} items that we found....!", list_of_items, "")
-            
-            
+
+
         print(f"\x1b[31m{message.author}: \x1b[33m{msg}\x1b[0m")
 
 intents = discord.Intents.default()
 intents.message_content = True
 client = MyClient(intents=intents)
-client.run('MTA5OTk3ODcwNzc0NzIyMTU3Ng.G5pEie.SRkHl1QHuWwrPt5f1gHQlGHyTX44Uy67GBaYeM')
+# client.run('MTA5OTk3ODcwNzc0NzIyMTU3Ng.GLI2SJ.hHhu11cgx8-5I0noSqxQr2qSqojAkiDxL82Syk')
+client.run('MTA4OTY5MjYwNzIxMjQyMTI3Mg.GyFMeY.iEBtkH9ZJ7xM9nGYmUd38F10FMT_fyiFz0mcxo')
+
