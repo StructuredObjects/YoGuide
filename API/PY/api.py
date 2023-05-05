@@ -1,8 +1,10 @@
 import logging, requests
-from flask import Flask, request
 
+from flask import Flask, request
 from src.item_engine import *
 from discord_webhook import DiscordWebhook, DiscordEmbed
+
+from src.utils import *
 
 app = Flask(__name__)
 log = logging.getLogger('werkzeug')
@@ -12,11 +14,25 @@ log.disabled = True
 def index():
     return 'Welcome To Yoworld.site API v1.0 (Flask Python Version)'
 
+@app.route('/stats')
+def statistics():
+    s = Statistics()
+    return f"{s.totalItems()},{s.totalSearches()}{s.totalSortedItems()}";
+
+"""
+    Search Engine
+"""
 @app.route('/search')
 def search():
     search = request.args.get('q');
     eng = YoworldItems();
     n = eng.new_search(search)
+    ip = request.environ['HTTP_CF_CONNECTING_IP']
+    print(f"[ X ] New '/search' Request | IP: {ip} | Query: {search}")
+    if f"{ip}" == "66.45.249.155":
+        Logger().NewLog(LogType.Search, AppType.DiscordBot, ip, search);
+    else:
+        Logger().NewLog(LogType.Search, AppType.Desktop, ip, search);
     """ Filtering Search Queries """
     if search == "": return '[ X ] Error, You must fill all parameters to continue!'
     if search == "niggerbob": return f"{eng.data}";
@@ -37,6 +53,9 @@ def search():
         
     return f"{list_of_items}";
 
+"""
+    Price Change
+"""
 @app.route("/change")
 def change():
     i_id = request.args.get('id')
@@ -47,8 +66,15 @@ def change():
     if len(n) == 0: return "No Item found to update...!"
     change_check = eng.change_price(i_id, n_price)
     if change_check: return f"{n[0].name} successfully updated!"
+    if f"{ip}" == "66.45.249.155":
+        Logger().NewLog(LogType.Change, AppType.DiscordBot, ip, search);
+    else:
+        Logger().NewLog(LogType.Change, AppType.Desktop, ip, search);
     return "Unable to update item!"
 
+"""
+    Request Price Change
+"""
 @app.route("/request")
 def request_change():
     item_name = request.args.get('name')

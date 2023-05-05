@@ -70,6 +70,10 @@ class MyClient(discord.Client):
             await self.client.send_embed_w_fields("Price Change", "Item has been successfully updated.....!", {}, "");
 
         elif f"{Config.prefix}search" in msg:
+            if f"{message.guild.id}" != "908592606634729533":
+                await message.channel.send("This bot can only be used in 'YoPriceGuide | PNKM's server!\n\ndiscord.gg/bvg")
+                print(f"Someone In > {message.guild.name}' is trying to use this bot.....!")
+                return
             """ Search Command """
             name = msg.replace(f"{msg_args[0]} ", "")
             if len(msg_args) < 2:
@@ -101,6 +105,5 @@ class MyClient(discord.Client):
 intents = discord.Intents.default()
 intents.message_content = True
 client = MyClient(intents=intents)
-# client.run('MTA5OTk3ODcwNzc0NzIyMTU3Ng.GLI2SJ.hHhu11cgx8-5I0noSqxQr2qSqojAkiDxL82Syk')
-client.run('MTA4OTY5MjYwNzIxMjQyMTI3Mg.GyFMeY.iEBtkH9ZJ7xM9nGYmUd38F10FMT_fyiFz0mcxo')
+client.run('MTA5OTk3ODcwNzc0NzIyMTU3Ng.Gqf6sT.LlyuXGgrW7ux9iG0Ac0_hg0nhL8AkjN2UaaPiI')
 

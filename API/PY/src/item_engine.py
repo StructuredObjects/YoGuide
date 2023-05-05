@@ -1,4 +1,4 @@
-import os, requests, datetime
+import os, requests, datetime, json
 
 class Item():
     def __init__(self, n: str, iid: int, u: str, p: str, last_u: str) -> None:
@@ -83,3 +83,11 @@ class YoworldItems():
         new_db.write(items)
         new_db.close()
         return found
+    
+    @staticmethod
+    def find_n_add(item_id: int) -> bool:
+        item_info = requests.get(f"https://api.yoworld.info/api/items/{item_id}").text 
+        json_info = json.loads(item_info)
+        name = json_info['data']['item']['name']
+        id = json_info['data']['item']['id']
+        line_format = f"('{name}','{id}','{}"
