@@ -135,12 +135,13 @@ class Statistics():
         for line in data.split("\n"):
             if len(line)< 5: break;
             info = Utils().parse_line(line);
-            if info[4] == "0" or info[4] == "":
-                no_priced_items += 1;
-            elif info[4].endswith("c") or info[4].endswith("k") or info[4].endswith("m") or info[4].endswith("b") or info[4].endswith("yc"):
-                priced_items += 1;
-            else:
-                messed_up_items += 1;
+            if len(info) == 4:
+                if info[4] == "0" or info[4] == "":
+                    no_priced_items += 1;
+                elif info[4].endswith("c") or info[4].endswith("k") or info[4].endswith("m") or info[4].endswith("b") or info[4].endswith("yc"):
+                    priced_items += 1;
+                else:
+                    messed_up_items += 1;
 
         return priced_items, no_priced_items, messed_up_items;
 

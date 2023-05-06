@@ -17,7 +17,7 @@ def index():
 @app.route('/stats')
 def statistics():
     s = Statistics()
-    return f"{s.totalItems()},{s.totalSearches()}{s.totalSortedItems()}";
+    return f"{s.totalItems()},{s.totalSearches()},{s.totalSortedItems()}";
 
 """
     Search Engine
@@ -25,16 +25,21 @@ def statistics():
 @app.route('/search')
 def search():
     search = request.args.get('q');
+    ip = request.environ['HTTP_CF_CONNECTING_IP']
+    
     eng = YoworldItems();
     n = eng.new_search(search)
-    ip = request.environ['HTTP_CF_CONNECTING_IP']
+
     print(f"[ X ] New '/search' Request | IP: {ip} | Query: {search}")
+    
+    """ Filtering Search Queries """
+    if search == "": return '[ X ] Error, You must fill all parameters to continue!';
+
     if f"{ip}" == "66.45.249.155":
         Logger().NewLog(LogType.Search, AppType.DiscordBot, ip, search);
     else:
         Logger().NewLog(LogType.Search, AppType.Desktop, ip, search);
-    """ Filtering Search Queries """
-    if search == "": return '[ X ] Error, You must fill all parameters to continue!'
+    
     if search == "niggerbob": return f"{eng.data}";
 
     """ Filtering Results """
@@ -60,16 +65,20 @@ def search():
 def change():
     i_id = request.args.get('id')
     n_price = request.args.get('price')
-
+    
     eng = YoworldItems()
     n = eng.new_search(i_id)
+    
     if len(n) == 0: return "No Item found to update...!"
-    change_check = eng.change_price(i_id, n_price)
-    if change_check: return f"{n[0].name} successfully updated!"
+    change_check = YoworldItems.change_price(i_id, n_price)
+
     if f"{ip}" == "66.45.249.155":
         Logger().NewLog(LogType.Change, AppType.DiscordBot, ip, search);
     else:
         Logger().NewLog(LogType.Change, AppType.Desktop, ip, search);
+    
+    if change_check: return f"{n[0].name} successfully updated!"
+    
     return "Unable to update item!"
 
 """

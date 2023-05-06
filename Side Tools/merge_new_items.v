@@ -16,7 +16,7 @@ fn main()
 			println("Checking ${info[0]}/${info[1]} | ${check}")
 			if main_db.contains(info[1]) {}
 			else {
-				main_db += "('${info[0]}','${info[1]}','${info[2]}','${info[3]}')\n"
+				main_db += "('${info[0]}','${info[1]}','${info[2]}','0','0')\n"
 			}
 		}
 	}
