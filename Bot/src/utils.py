@@ -12,7 +12,7 @@ class MessageUtils():
         for key in fields:
             embed.add_field(name=f"{key}", value=f"{fields[key][0]}", inline=fields[key][1]);
             
-        if image_url != "": embed.set_image(url=f"{image_url}");
+        embed.set_image(url=f"{image_url}");
         await self.client.channel.send(embed=embed);
         return True
 
@@ -22,5 +22,5 @@ class MessageUtils():
         for key in fields:
             embed.add_field(name=f"{key}", value=f"{fields[key]}", inline=True)
 
-        if iurl != "": embed.set_image(url=f"{iurl}")
+        embed.set_image(url=f"{iurl}")
         await self.client.channel.send(embed=embed)

@@ -15,6 +15,13 @@ class Item():
 
         self.yoworld_price, self.yoworld_update = YoworldItems.getItemPriceFromYwInfo(self.iid)
 
+        
+    def arr2item(self, arr: list):
+        self.name = arr[0]; self.iid = arr[1]; self.url = arr[2];
+        self.price = arr[3]; 
+        if len(arr) == 5: self.last_update = arr[4];
+
+
 class YoworldItems:
     @staticmethod
     def searchItems(item_name: str) -> list:
@@ -53,6 +60,45 @@ class YoworldItems:
         except:
             print("\x1b[31m[x]\x1b[0m Error, Unable to retrieve item information or connecting to API (api.yoworld.info)");
             return "n/a", "n/a";
+
+    @staticmethod
+    def GrabItemFromYoworldInfo(item_id: str) -> Item:
+        print(f"\x1b[31m{item_id}\x1b[0m")
+        results = requests.get(f"https://api.yoworld.info/api/items/{item_id}").text;
+        if not results.startswith("{") and not results.endswith("}"):
+            print(f"[ X ] (INVALID_JSON) Error, Unable to get item information....!\n\n{results}");
+            
+        
+        """ Manually Parsing JSON """
+        new = results.replace("\", ", "\n").replace(",\"", "\n").replace("},{", "\n").replace("\":{\"", "\n").replace("{", "").replace("}", "").replace("[", "").replace("]", "").replace("\":\"", ":").replace("\":", ":").replace("\"", "");
+        result_lines = new.split("\n");
+        print(new)
+        info = Item()
+        c = 0
+        for line in result_lines:
+            if "id:" in line and "name:" in result_lines[c+1]:
+                info.name = result_lines[c+1].replace("name:", "");
+                info.iid = line.replace("id:", "");
+                info.url = "";
+            
+            elif "price:" in line and "approved:" in result_lines[c+1]:
+                info.price = line.replace("price:" , ""); ## Replace() to avoid errors
+            
+            elif "price:" in line and "price_cash:" in result_lines[c+1]:
+                if not "approved:" in results:
+                    if line.replace("price:", "").strip() != "0":
+                        info.price = line.replace("price:", "");
+                    elif result_lines[c+1].replace("price_cash:", "").strip() != "0":
+                        info.price = result_lines[c+1].replace("price_cash:", "") + "yc";
+            
+            elif "updated_at:" in line and "deleted_at:" in result_lines[c+1]:
+                info.last_update = line.replace("updated_at:", "").replace(" ", "-");
+                break
+
+            # elif ""
+            c += 1
+
+        return info;
 
     @staticmethod
     def change_price(item_id: str, new_price: str) -> bool:

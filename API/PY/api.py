@@ -1,14 +1,15 @@
 import logging, requests
 
-from flask import Flask, request
-from src.item_engine import *
-from discord_webhook import DiscordWebhook, DiscordEmbed
-
-from src.utils import *
+from flask                                  import Flask, request
+from src.YoworldItems.item_search           import *
+from src.YoworldItems.alt_item_search       import *
+from discord_webhook                        import DiscordWebhook, DiscordEmbed
+from src.utils                              import *
 
 app = Flask(__name__)
 log = logging.getLogger('werkzeug')
 log.disabled = True
+
 
 @app.route('/')
 def index():
@@ -43,20 +44,17 @@ def search():
     if search == "niggerbob": return f"{eng.data}";
 
     """ Filtering Results """
-    if n == [] or len(n) == 0: return f"No items found with '{search}'";
-    if len(n) == 1: return f"[{n[0].name}, {n[0].iid}, {n[0].url}, {n[0].price}, {n[0].last_update}]";
-
-    list_of_items = ""
-    c = 0
-    if len(n) > 1:
+    if len(n) == 0: return f"No items found with '{search}'";
+    elif len(n) == 1: return f"[{n[0].name}, {n[0].iid}, {n[0].url}, {n[0].price}, {n[0].last_update}]";
+    elif len(n) > 1:
+        list_of_items = ""
+        c = 0
         for i in n:
-            if c == len(n)-1:
-                list_of_items += f"[{n[c].name},{n[c].iid},{n[c].url},{n[c].price},{n[c].last_update}]";
-            else:
-                list_of_items += f"[{n[c].name},{n[c].iid},{n[c].url},{n[c].price},{n[c].last_update}]\n";
+            if c == len(n)-1: list_of_items += f"[{n[c].name},{n[c].iid},{n[c].url},{n[c].price},{n[c].last_update}]";
+            else: list_of_items += f"[{n[c].name},{n[c].iid},{n[c].url},{n[c].price},{n[c].last_update}]\n";
             c += 1
-        
-    return f"{list_of_items}";
+            
+        return f"{list_of_items}";
 
 """
     Price Change

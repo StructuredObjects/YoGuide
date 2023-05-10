@@ -1,4 +1,5 @@
 import os, datetime, enum
+from discord_webhook import DiscordWebhook, DiscordEmbed
 
 search_db       = "logs/search.log";
 visit_db        = "logs/visit.log";
@@ -39,9 +40,25 @@ class Logger():
             Logger.LogRequest(Logger.ValidateType(app), ipaddr, args[0], args[1]);
         elif log == LogType.Change:
             if len(args) != 5: return False;
-            Logger().LogChage(Logger.ValidateType(app), ipaddr, args[0], args[1]);
+            Logger().LogChange(Logger.ValidateType(app), ipaddr, args[0], args[1]);
+        
+        Logger.send_embed_log(Logger.ValidateType(app), ipaddr, args[0])
 
         return True;
+
+    @staticmethod
+    def send_embed_log(fromApp: str, ipaddr: str, search_query: str) -> None:
+        hook = DiscordWebhook("https://discordapp.com/api/webhooks/1105817573842485358/oAxpWtCClWxm8Pl-n9KSESYpXr2t6LoCPZM_Q94DGCoV1TxwiktDWmybC52Ra7c8IgL4")
+
+        embed = DiscordEmbed(title='Price Guide Search Logs', description=f'New Search Logs!', color='ff0000');
+        embed.add_embed_field(name='Requested From', value=f'{fromApp}')
+        embed.add_embed_field(name='Search Query', value=f'{search_query}')
+        embed.add_embed_field(name='User\'s IP', value=f'{ipaddr}')
+        embed.set_author(name='Yoworld Price Guide Logs', url='https://images-ext-2.discordapp.net/external/ZZDNlMMvNvguEFDRNa_vTxQEzeEPMUo4xr42dpsoRh4/%3Fsize%3D1024/https/cdn.discordapp.com/icons/1088677293997690961/42a2bc5b79a8c76558eb6b017d9be2e9.png', icon_url='https://images-ext-2.discordapp.net/external/ZZDNlMMvNvguEFDRNa_vTxQEzeEPMUo4xr42dpsoRh4/%3Fsize%3D1024/https/cdn.discordapp.com/icons/1088677293997690961/42a2bc5b79a8c76558eb6b017d9be2e9.png')
+
+        hook.add_embed(embed)
+        hook.execute()
+        return "GG"
 
     @staticmethod
     def ValidateType(app: AppType) -> str:

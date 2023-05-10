@@ -54,9 +54,10 @@ class MyClient(discord.Client):
 
         if f"{Config.prefix}change" in msg:
             """ Change Item Price Command """
-            if not f"{message.author.id}" in Config.admins: 
-                await self.client.send_embed_w_fields("Price Change | Error", f"You do not have access to this command....! Contact the owner for access", {}, "");
-                return;
+            # if not f"{message.author.id}" in Config.admins: 
+            #     await self.client.send_embed_w_fields("Price Change | Error", f"You do not have access to this command....! Contact the owner for access", {}, "");
+            #     return;
+            
             if len(msg_args) != 3:
                 await self.client.send_embed_w_fields("Price Change | Error", f"Invalid arguments provided....!\nExample Usage: {Config.prefix}change 26295 300m", {}, "");
                 return
@@ -74,6 +75,7 @@ class MyClient(discord.Client):
                 await message.channel.send("This bot can only be used in 'YoPriceGuide | PNKM's server!\n\ndiscord.gg/bvg")
                 print(f"Someone In > {message.guild.name}' is trying to use this bot.....!")
                 return
+            
             """ Search Command """
             name = msg.replace(f"{msg_args[0]} ", "")
             if len(msg_args) < 2:
@@ -81,12 +83,14 @@ class MyClient(discord.Client):
 
             found = YoworldItems.searchItems(name)
             await self.client.send_embed_w_fields("Search", "Searching, please wait.....!", {}, "")
-            if len(found) == 0: 
-                return (await self.client.send_embed_w_fields("Search", "No items were found....!", {}, ""))
 
-            if len(found) > 0:
+            if len(found) == 1 and found[0].name == "":
+                return (await self.client.send_embed_w_fields("Search", "No items were found....!", {}, ""))
+            
+            if len(found) == 1:
+                print(found[0].url.strip())
                 info = {"Item Name": found[0].name, "Item ID": str(found[0].iid), "Item Price": found[0].price, "Last Updated On": found[0].last_update, "Yoworld.Info Price": found[0].yoworld_price, "Yoword.Info Last Update": found[0].yoworld_update}
-                await self.client.send_item_embed("Search", f"Item Found!", info, found[0].url)
+                await self.client.send_item_embed("Search", f"Item Found!", info, found[0].url.strip())
             
             if len(found) > 1:
                 """ Add results to a dict for embed fields """
@@ -105,5 +109,5 @@ class MyClient(discord.Client):
 intents = discord.Intents.default()
 intents.message_content = True
 client = MyClient(intents=intents)
-client.run('MTEwNDI1MDAxMzgzNzcwOTQyMg.GUXkis.EhcOvXq4_PRSIem1hKvRVXndJBCAi5HMvuL7OQ')
+client.run('MTEwNDI1MDAxMzgzNzcwOTQyMg.G27MBW.SswLUm7qRCehrnS6eK5bUuOLj5rXqQeD5eUIcw')
 
