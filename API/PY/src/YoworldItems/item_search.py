@@ -20,7 +20,8 @@ class Item():
 
 class YoworldItems():
     data = ""
-    def __init__(self) -> None:
+    def __init__(self, query = "") -> None:
+        if query != "": self.search = query
         self.__fetchItem();
 
     def __parseline(self, line: str) -> list:
@@ -49,9 +50,9 @@ class YoworldItems():
             check_db = self.searchByID();
             if check_db.name != "": return [check_db]; ## RETURN EXACT RESULT FROM DB
             else: 
-                info = ItemGrabber().GrabItemPriceFromYwInfo(s); ## USES YW.INFO and YWDB.COM FOR SEARCHING
-                YoworldItems.add_item_to_db(info.name, info.iid, info.url, info.price, info.last_update);
-                return [info];
+                self.ywdb = ItemGrabber().GrabItemPriceFromYwInfo(s); ## USES YW.INFO and YWDB.COM FOR SEARCHING
+                YoworldItems.add_item_to_db(self.ywdb.name, self.ywdb.iid, self.ywdb.url, self.ywdb.price, self.ywdb.last_update);
+                return [self.ywdb];
 
         """ NAME SEARCH FILTERING """
         results = self.searchByName();

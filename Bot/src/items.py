@@ -1,8 +1,53 @@
 import requests, json
 
+class YWDB_Item():
+    iid: str
+    name: str
+    gender: int
+    price_coins: int
+    price_cash: int
+    is_tradable: int
+    is_free_gift: int
+    can_gift: int
+    in_store: int
+    image_url: str
+    category: str
+    xp: int
+    def __init__(self, info: list):
+        if len(info) == 15: return;
+        self.iid = int(info[0]);
+        self.name = info[1];
+        self.gender = int(info[2]);
+        self.price_coins = int(info[3]);
+        self.price_cash = int(info[4]);
+        self.is_tradable = int(info[5]);
+        self.is_free_gift = int(info[6]);
+        self.can_gift = int(info[7]);
+        self.in_store = int(info[8]);
+        self.image_url = info[9];
+        self.category = info[10];
+        self.xp = int(info[11]);
+    def item2dict(self) -> dict:
+        self.item = {
+            "ID": self.iid,
+            "Name": self.name,
+            "Gender": self.gender,
+            "Price Coins": self.price_coins,
+            "Price Cash": self.price_cash,
+            "Tradable": self.is_tradable,
+            "Free Gift": self.is_free_gift,
+            "Giftable": self.can_gift,
+            "In-Store": self.in_store,
+            "ImgURL": self.image_url,
+            "Categorya": self.category,
+            "XP": self.xp
+        };
+        return self.item;
+
 class API:
     url = "https://api.yoworld.site"
     searchEndpoint = f"{url}/search"
+    advanceEndpoint = f"{url}/advance"
     pricechangeEndpoint = f"{url}/change"
 
 class Item():
@@ -49,6 +94,20 @@ class YoworldItems:
         return found;
 
     @staticmethod
+    def advanceInfo(item_id: str) -> dict:
+        results = requests.get(f"{API().advanceEndpoint}?id={item_id}").text
+        results = results.replace("{", "").replace("}", "").replace("'", "").replace(", ", "\n");
+        
+        info = {};
+        for line in results.split("\n"):
+            args = line.split(":");
+            if not "url" in line:
+                info[args[0]] = [f"{args[1]}", True]
+
+        return info;
+
+
+    @staticmethod
     def getItemPriceFromYwInfo(item_id: str) -> tuple[str, str]:
         try:
             item_data = requests.get(f"https://api.yoworld.info/api/items/{item_id}");
@@ -72,7 +131,7 @@ class YoworldItems:
         """ Manually Parsing JSON """
         new = results.replace("\", ", "\n").replace(",\"", "\n").replace("},{", "\n").replace("\":{\"", "\n").replace("{", "").replace("}", "").replace("[", "").replace("]", "").replace("\":\"", ":").replace("\":", ":").replace("\"", "");
         result_lines = new.split("\n");
-        print(new)
+        
         info = Item()
         c = 0
         for line in result_lines:
@@ -95,7 +154,6 @@ class YoworldItems:
                 info.last_update = line.replace("updated_at:", "").replace(" ", "-");
                 break
 
-            # elif ""
             c += 1
 
         return info;

@@ -56,6 +56,22 @@ def search():
             
         return f"{list_of_items}";
 
+@app.route("/advance")
+def advance_search():
+    query = request.args.get('id');
+    # ip = request.environ['HTTP_CF_CONNECTING_IP'];
+
+    if not query.isdigit():
+        return f"[x] Error, Invalid Item ID.....!";
+
+    found = YoworldItems(int(query)).searchByID();
+    itm = ItemGrabber().GrabItemFromYoworldDB(query)
+    info = itm.item2dict()
+    
+    # if found.name == "" and itm.name == "": return f"[x] Error, Item was not found";
+
+    return f"{info}";
+
 """
     Price Change
 """
@@ -63,6 +79,7 @@ def search():
 def change():
     i_id = request.args.get('id')
     n_price = request.args.get('price')
+    ip = request.environ['HTTP_CF_CONNECTING_IP']
     
     eng = YoworldItems()
     n = eng.new_search(i_id)
@@ -100,6 +117,10 @@ def request_change():
     hook.execute()
     return "GG"
 
+@app.route("/app")
+def app():
+    return f""
+
 @app.route("/ip")
 def get_client_ip():
     ip = request.environ['HTTP_CF_CONNECTING_IP']
@@ -107,4 +128,4 @@ def get_client_ip():
     
 if __name__ == '__main__':
     ip = requests.get("https://api.ipify.org").text
-    app.run(host=ip, port=80)
+    app.run(host="0.0.0.0", port=80)
