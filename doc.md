@@ -2,11 +2,11 @@
 <h1> Yoworld Item API SDK </h1>
 </div>
 
-### Introducing our API documentation!
+# Introducing our API documentation!
 
 Here we host muliple endpoints for developers to create such yoworld tools and distribute them to the community
 
-# Item Search
+### Item Search
 Endpoint: ``/search``
 GET Parameters: ``q``
 
@@ -21,7 +21,7 @@ results = requests.get("https://api.yoworld.site/search?q=257460)
 print(results.text)
 ```
 
-# Advance Item Information
+### Advance Item Information
 Endpoint: ``/advance``
 GET Parameters: ``q``
 
