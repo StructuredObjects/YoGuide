@@ -6,8 +6,17 @@
 
 Here we host muliple endpoints for developers to create such yoworld tools and distribute them to the community
 
+### Progress || Task List
+- [x] Item Search Endpoint
+- [x] Advance Info Retrieval Endpoint
+- [x] Change Price Endpoint
+- [ ] Statistic Endpoint (Needs work)
+- [ ] New/Updates Endpoint
+- [ ] Alternative Resources
+
 ### Item Search
 Endpoint: ``/search``
+
 GET Parameters: ``q``
 
 GET Request Example using cURL
@@ -23,6 +32,7 @@ print(results.text)
 
 ### Advance Item Information
 Endpoint: ``/advance``
+
 GET Parameters: ``q``
 
 GET Request Example using cURL
