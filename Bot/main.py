@@ -57,7 +57,7 @@ class MyClient(discord.Client):
             # if not f"{message.author.id}" in Config.admins: 
             #     await self.client.send_embed_w_fields("Price Change | Error", f"You do not have access to this command....! Contact the owner for access", {}, "");
             #     return;
-            
+
             if len(msg_args) != 3:
                 await self.client.send_embed_w_fields("Price Change | Error", f"Invalid arguments provided....!\nExample Usage: {Config.prefix}change 26295 300m", {}, "");
                 return
@@ -88,10 +88,13 @@ class MyClient(discord.Client):
                 return (await self.client.send_embed_w_fields("Search", "No items were found....!", {}, ""))
             
             if len(found) == 1:
-                print(found[0].url.strip())
                 info = {"Item Name": found[0].name, "Item ID": str(found[0].iid), "Item Price": found[0].price, "Last Updated On": found[0].last_update, "Yoworld.Info Price": found[0].yoworld_price, "Yoword.Info Last Update": found[0].yoworld_update}
-                await self.client.send_item_embed("Search", f"Item Found!", info, found[0].url.strip())
-            
+                await self.client.send_item_embed("Search", f"Item Found!", info, found[0].url.strip());
+                if name.isdigit(): 
+                    ywdb = YoworldItems.advanceInfo(name);
+                    await self.client.send_embed_w_fields("Search", "Extra Item Information", ywdb, "");
+                return;
+        
             if len(found) > 1:
                 """ Add results to a dict for embed fields """
                 list_of_items = {}
@@ -109,5 +112,5 @@ class MyClient(discord.Client):
 intents = discord.Intents.default()
 intents.message_content = True
 client = MyClient(intents=intents)
-client.run('MTEwNDI1MDAxMzgzNzcwOTQyMg.G27MBW.SswLUm7qRCehrnS6eK5bUuOLj5rXqQeD5eUIcw')
+client.run('MTEwNDI1MDAxMzgzNzcwOTQyMg.Gp52Ne.rL0CxxChAqEFkwwv1ykdMNvtjyEJARl7pmKOQ8')
 

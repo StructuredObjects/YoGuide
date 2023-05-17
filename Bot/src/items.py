@@ -100,6 +100,7 @@ class YoworldItems:
         
         info = {};
         for line in results.split("\n"):
+            if len(line) < 3: break
             args = line.split(":");
             if not "url" in line:
                 info[args[0]] = [f"{args[1]}", True]
