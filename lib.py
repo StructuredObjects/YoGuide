@@ -5,6 +5,7 @@ class API:
     searchEndpoint      = f"{url}/search"
     infoEndpoint        = f"{url}/advance"
     changeEndpoint      = f"{url}/change"
+    statsEndpoint       = f"{url}/stats"
 
 class Results(enum.Enum):
     NONE                = 0
@@ -95,10 +96,11 @@ class YoworldSite:
         return found;
 
     @staticmethod
-    def infoSearch(item_id: str, itm: Item | None) -> Item:
-        if len(item_id) == 0 | item_id.isdigit() == False: return Item("", "", "", "", "");
+    def infoSearch(item_id: int, itm: Item | None) -> Item:
+        if len(item_id) == 0: return Item("", "", "", "", "");
         result = requests.get(f"{API().infoEndpoint}?q={item_id}");
         if result.status_code != 200:
+            print("[ X ] Error, API is down...!");
             return Item("", "", "", "", "");
 
         response = result.text;
@@ -119,3 +121,31 @@ class YoworldSite:
         new_item = Item();
         new_item.add_extra_info(item_info);
         return new_item;
+
+    @staticmethod
+    def priceChange(item_id: int, price: int) -> bool:
+        if len(item_id) == 0: return Item("", "", "", "", "");
+        results = requests.get(f"{API().changeEndpoint}?id={item_id}&price={price}");
+        if results.status_code != 200:
+            print("[ X ] Error, API is down...!");
+            return False;
+
+        response = results.text;
+
+        if response == "No Item found to update...!": return False;
+        if response == "Unable to update item!": return False;
+        if response.strip().endswith("successfully updated!"): return True;
+        return False;
+
+    @staticmethod
+    def stats() -> list[int]:
+        results = requests.get(f"{API().statsEndpoint}")
+        if results.status_code != 200:
+            return 0, 0, 0;
+    
+        response = results.text;
+
+        if not "," in response:
+            return 0, 0, 0;
+
+        return response.split(",");
