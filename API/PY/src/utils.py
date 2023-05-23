@@ -147,17 +147,16 @@ class Statistics():
     """
     @staticmethod
     def totalSortedItems() -> tuple[int, int, int]:
-        priced_items, no_priced_items, messed_up_items = [0, 0, 0];
+        priced_items, no_priced_items, messed_up_items = 0, 0, 0;
         data, lines = File().Read("items.txt");
         for line in data.split("\n"):
-            if len(line)< 5: break;
+            if len(line)< 5: continue;
             info = Utils().parse_line(line);
-            if len(info) == 4:
-                if info[4] == "0" or info[4] == "":
+            if info[3] == "0" or info[3] == "":
                     no_priced_items += 1;
-                elif info[4].endswith("c") or info[4].endswith("k") or info[4].endswith("m") or info[4].endswith("b") or info[4].endswith("yc"):
+            elif info[3].endswith("c") or info[3].endswith("k") or info[3].endswith("m") or info[3].endswith("b") or info[3].endswith("yc") or int(info[3].lower().replace("m", "").replace("yc", "").replace("k", "").replace("b", "").replace(".", "").replace("-", "")) > 0:
                     priced_items += 1;
-                else:
+            else:
                     messed_up_items += 1;
 
         return priced_items, no_priced_items, messed_up_items;

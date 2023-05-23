@@ -74,7 +74,7 @@ class YoworldItems():
 
             if " " in self.search:
                 words = no_case_sen.split(" ")
-                if len(words) < 2:
+                if len(words) <= 2:
                     for word in words:
                         if word in item.name:
                             self.found.append(item);

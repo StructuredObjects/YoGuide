@@ -58,7 +58,7 @@ class Item():
         if self.price == "0" or self.price == "": self.price = "n/a"
         if self.last_update == "" or self.last_update == "0": self.last_update = "n/a"
 
-        self.yoworld_price, self.yoworld_update = YoworldItems.getItemPriceFromYwInfo(self.iid)
+        # self.yoworld_price, self.yoworld_update = YoworldItems.getItemPriceFromYwInfo(self.iid)
 
         
     def arr2item(self, arr: list):
@@ -96,7 +96,7 @@ class YoworldItems:
     @staticmethod
     def advanceInfo(item_id: str) -> dict:
         results = requests.get(f"{API().advanceEndpoint}?id={item_id}").text
-        results = results.replace("{", "").replace("}", "").replace("'", "").replace(", ", "\n");
+        results = results.replace("{", "").replace("}", "").replace("'", "").replace("\"", "").replace(", ", "\n");
         
         info = {};
         for line in results.split("\n"):

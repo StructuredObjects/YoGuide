@@ -35,7 +35,13 @@ class YoworldSite
         if($results === "[ X ] Error, You must fill all parameters to continue!") return [];
         if(str_contains($results, "No items found")) return [];
         if(!str_starts_with($results, "[") && !str_ends_with($results, "]")) return [];
-        if(!str_contains($results, "\n")) return [$results];
+        if(!str_contains($results, "\n")) 
+        {
+            $info = (new Utils())->parse_line($results);
+            $itm = new Item();
+            $itm->arr2item($info);
+            return [$itm];
+        }
 
         $lines = explode("\n", $results);
         $found = [];
@@ -58,7 +64,7 @@ class Utils
     public static function parse_line(string $line): array
     {
         $new_str = $line;
-        foreach(["(", ")", "'"] as $s)
+        foreach(["[", "]", "'"] as $s)
         {
             $new_str = str_replace($s, "", $new_str);
         }

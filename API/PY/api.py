@@ -18,7 +18,8 @@ def index():
 @app.route('/stats')
 def statistics():
     s = Statistics()
-    return f"{s.totalItems()},{s.totalSearches()},{s.totalSortedItems()}";
+    gg, hh, jj = s.totalSortedItems()
+    return f"{s.totalItems()},{s.totalSearches()},{gg},{hh},{jj}";
 
 """
     Search Engine
@@ -59,7 +60,7 @@ def search():
 @app.route("/advance")
 def advance_search():
     query = request.args.get('id');
-    # ip = request.environ['HTTP_CF_CONNECTING_IP'];
+    ip = request.environ['HTTP_CF_CONNECTING_IP'];
 
     if not query.isdigit():
         return f"[x] Error, Invalid Item ID.....!";
@@ -118,8 +119,8 @@ def request_change():
     return "GG"
 
 @app.route("/app")
-def app():
-    return f""
+def appNews():
+    return f"defdfds";
 
 @app.route("/ip")
 def get_client_ip():

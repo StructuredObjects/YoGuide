@@ -31,6 +31,11 @@ class Yoworld
         })
 
         if(!data.startsWith("[") && !data.endsWith("]")) return;
+
+        if(!data.include("\n")) 
+        {
+            
+        }
     }
 }
 
