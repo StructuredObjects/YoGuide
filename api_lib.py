@@ -82,6 +82,7 @@ class YoworldEngine():
 
             if self.query in item.name or no_case_sen in item.name.lower():
                 self.found.append(item);
+                continue;
 
             if " " in self.query:
                 words = no_case_sen.split(" ")
@@ -92,6 +93,7 @@ class YoworldEngine():
 
                         if matchh > 1:
                             self.found.append(item);
+                            continue;
         return self.found
     
     def __searchByID(self) -> Item:
