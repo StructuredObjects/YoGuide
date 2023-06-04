@@ -1,5 +1,7 @@
 import requests, enum
 
+db_path = "items.txt";
+
 class Item():
     """
         General Item Information
@@ -35,9 +37,6 @@ class YoworldEngine():
 
     def __init__(self):
         self.__retriveItems();
-
-    def updateDB(self) -> None:
-        self.__retriveItems();
     
     def Search(self, q: str) -> Response:
         self.query = q;
@@ -59,7 +58,7 @@ class YoworldEngine():
 
     def __retriveItems(self) -> None:
         self.items = [];
-        db = open("items.txt", "r");
+        db = open(db_path, "r");
         lines = db.read().split("\n");
 
         """
@@ -102,6 +101,20 @@ class YoworldEngine():
                 return item;
 
         return Item();
+
+    def __changePrice(self, itm: Item, n_price: str) -> bool:
+        db = open(db_path, "r");
+
+        lines = db.read().split("\n");
+
+        for line in lines:
+            if len(line) < 5: continue;
+            info = YoworldEngine.parseLine(line);
+            if len(info) == 5:
+                if info[1] == itm.id:
+
+
+        self.__retriveItems();
 
 
     @staticmethod
