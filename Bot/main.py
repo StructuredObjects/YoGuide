@@ -2,6 +2,7 @@ import discord, requests, subprocess, json
 
 from src.items import *
 from src.utils import *
+from api_lib import *
 
 class Config:
     admins = ['1099019888145727488', '1100211506576097360', '908558131414597634', '364049733058297866', '1085795101730689046', '264271565087178753', '931025746682601483', '1090225338182815744']
@@ -71,40 +72,58 @@ class MyClient(discord.Client):
             await self.client.send_embed_w_fields("Price Change", "Item has been successfully updated.....!", {}, "");
 
         elif f"{Config.prefix}search" in msg:
-            if f"{message.guild.id}" != "908592606634729533":
-                await message.channel.send("This bot can only be used in 'YoPriceGuide | PNKM's server!\n\ndiscord.gg/bvg")
-                print(f"Someone In > {message.guild.name}' is trying to use this bot.....!")
-                return
-            
             """ Search Command """
             name = msg.replace(f"{msg_args[0]} ", "")
             if len(msg_args) < 2:
                 await self.client.send_embed_w_fields("Search Error", f"Invalid item name or ID provided....!\n__Usage:__ ``{Config.prefix}search <item_name/id>", {}, "")
+                return;
 
-            found = YoworldItems.searchItems(name)
+            # found = YoworldItems.searchItems(name)
             await self.client.send_embed_w_fields("Search", "Searching, please wait.....!", {}, "")
 
-            if len(found) == 1 and found[0].name == "":
-                return (await self.client.send_embed_w_fields("Search", "No items were found....!", {}, ""))
-            
-            if len(found) == 1:
-                info = {"Item Name": found[0].name, "Item ID": str(found[0].iid), "Item Price": found[0].price, "Last Updated On": found[0].last_update, "Yoworld.Info Price": found[0].yoworld_price, "Yoword.Info Last Update": found[0].yoworld_update}
-                await self.client.send_item_embed("Search", f"Item Found!", info, found[0].url.strip());
-                if name.isdigit(): 
-                    ywdb = YoworldItems.advanceInfo(name);
-                    await self.client.send_embed_w_fields("Search", "Extra Item Information", ywdb, "");
+            eng = YoworldEngine()
+            n = eng.Search(name);
+            if n == Response.NONE:
+                await self.client.send_embed_w_fields("Search", "Unable to find item....!", "", "");
                 return;
-        
-            if len(found) > 1:
-                """ Add results to a dict for embed fields """
-                list_of_items = {}
+            elif n == Response.EXACT:
+                r = eng.getResults();
+                print(f"Item: {r[0].name} | {r[0].id} | {r[0].price} | {r[0].update}");
+                info = {"Item Name": r[0].name, "Item ID": str(r[0].id), "Item Price": r[0].price, "Last Updated On": r[0].update}
+                await self.client.send_item_embed("Search", f"Item Found!", info, r[0].url.strip());
+                return;
+            elif n == Response.EXTRA:
+                r = eng.getResults();
                 c = 0
-                for item in found:
-                    if c == 10: break
-                    list_of_items[item.name] = [f"ID: {item.iid} | Price: {item.price} | Updated: {item.last_update}", False]
-                    c += 1
+                list_of_items = {};
+                for itm in r:
+                    if c > 20: break;
+                    list_of_items[itm.name] = [f"ID: {itm.id} | Price: {itm.price} | Updated: {itm.update}", False];
+                    c += 1;
+                
+                await self.client.send_embed_w_fields("Search", f"A List Of  The {len(r)} items that we found....!", list_of_items, "");
 
-                await self.client.send_embed_w_fields("Search", f"A List Of  The {len(found)} items that we found....!", list_of_items, "")
+            # if len(found) == 1 and found[0].name == "":
+            #     return (await self.client.send_embed_w_fields("Search", "No items were found....!", {}, ""))
+            
+            # if len(found) == 1:
+            #     info = {"Item Name": found[0].name, "Item ID": str(found[0].iid), "Item Price": found[0].price, "Last Updated On": found[0].last_update, "Yoworld.Info Price": found[0].yoworld_price, "Yoword.Info Last Update": found[0].yoworld_update}
+            #     await self.client.send_item_embed("Search", f"Item Found!", info, found[0].url.strip());
+            #     if name.isdigit(): 
+            #         ywdb = YoworldItems.advanceInfo(name);
+            #         await self.client.send_embed_w_fields("Search", "Extra Item Information", ywdb, "");
+            #     return;
+        
+            # if len(found) > 1:
+            #     """ Add results to a dict for embed fields """
+            #     list_of_items = {}
+            #     c = 0
+            #     for item in found:
+            #         if c == 10: break
+            #         list_of_items[item.name] = [f"ID: {item.iid} | Price: {item.price} | Updated: {item.last_update}", False]
+            #         c += 1
+
+            #     await self.client.send_embed_w_fields("Search", f"A List Of  The {len(found)} items that we found....!", list_of_items, "")
 
 
         print(f"\x1b[31m{message.author}: \x1b[33m{msg}\x1b[0m")
@@ -112,5 +131,5 @@ class MyClient(discord.Client):
 intents = discord.Intents.default()
 intents.message_content = True
 client = MyClient(intents=intents)
-client.run('MTEwNDI1MDAxMzgzNzcwOTQyMg.Gp52Ne.rL0CxxChAqEFkwwv1ykdMNvtjyEJARl7pmKOQ8')
+client.run('MTEwODM5OTM1NTY3ODk1MzUxMw.GH5NrH.ZMtO5sGtyQ9qJ3dCaviRwmK3iHfEf4X4Nib22o')
 

@@ -15,13 +15,16 @@ n = eng.Search(query);
 if n == Response.NONE:
     print("[ X ] Unable to find item.....!");
     exit(0);
+
 elif n == Response.EXACT:
+
     r = eng.getResults();
     print(f"Item: {r[0].name} | {r[0].id} | {r[0].price} | {r[0].update}");
     exit(0);
+
 elif n == Response.EXTRA:
     r = eng.getResults();
-    c = 0
+    c = 0;
     for itm in r:
         print(f"Item: {r[c].name} | {r[c].id} | {r[c].price} | {r[c].update}");
         c += 1

@@ -25,6 +25,7 @@ class Item():
     store_price:    str;
     gender:         str;
     xp:             str;
+        
 
 class Response(enum.Enum):
     NONE    = 0
@@ -145,3 +146,12 @@ class YoworldEngine():
             itm.price = f"{arr[3]}/{conv_coins}c";
         
         return itm;
+
+    @staticmethod
+    def item2dict(i: Item) -> dict:
+        return {
+            "Name": f"{i.name}",
+            "ID": f"{i.id}",
+            "Price": f"{i.price}",
+            "Last Updated": f"{i.update}"
+        };
