@@ -27,9 +27,9 @@ class Item():
     xp:             str;
 
 class Response(enum.Enum):
-    NONE    = 0
-    EXACT   = 1
-    EXTRA   = 2
+    NONE    = 0;
+    EXACT   = 1;
+    EXTRA   = 2;
 
 class YoworldEngine():
     items: list[Item];

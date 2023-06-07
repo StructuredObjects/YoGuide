@@ -12,6 +12,7 @@ query = f"{args}".replace("[", "").replace("]", "").replace("'", "").replace(","
 
 eng = YoworldEngine()
 n = eng.Search(query);
+print(f"{n}")
 if n == Response.NONE:
     print("[ X ] Unable to find item.....!");
     exit(0);
