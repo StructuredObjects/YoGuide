@@ -1,7 +1,7 @@
 import sys
 
-from api_lib import *
-
+from src.yoguide.yoguide import *
+from src.yoguide.item_searches import *
 args = sys.argv;
 
 if len(args) < 2:
@@ -20,7 +20,8 @@ if n == Response.NONE:
 elif n == Response.EXACT:
 
     r = eng.getResults();
-    print(f"Item: {r[0].name} | {r[0].id} | {r[0].price} | {r[0].update}");
+    gg = ItemSearch.ywdbSearch(r[0]);
+    print(f"Item: {r[0].name} | {r[0].id} | {r[0].price} | {r[0].update} | {gg.in_store}");
     exit(0);
 
 elif n == Response.EXTRA:
