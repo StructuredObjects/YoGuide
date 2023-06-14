@@ -25,6 +25,7 @@ class Item():
     store_price:    str;
     gender:         str;
     xp:             str;
+    categroy:       str;
 
 class Response(enum.Enum):
     NONE    = 0;
@@ -139,9 +140,9 @@ class YoworldEngine():
         itm.name = arr[0]; itm.id = int(arr[1]); itm.url = arr[2]; 
         itm.price = arr[3]; itm.update = arr[4];
 
-        # if "yc" in arr[3]:
-        #     yc = arr[3].replace("yc", "").replace("/", "").replace(" ", "");
-        #     conv_coins = int(yc)*60000;
-        #     itm.price = f"{arr[3]}/{conv_coins}c";
+        if arr[3].endswith("yc"):
+            yc = arr[3].replace("yc", "").replace("/", "").replace(" ", "").replace("In-store", "").replace("In-Store", "");
+            conv_coins = int(yc)*60000;
+            itm.price = f"{arr[3]}/{conv_coins}c";
         
         return itm;

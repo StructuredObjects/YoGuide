@@ -30,9 +30,10 @@
 
   <?php
     
-    if(array_key_exists("item_name", $_POST))
+    if(array_key_exists("search_item", $_POST))
     {
       $query = $_POST['item_name'];
+      $ip = $_SERVER["HTTP_CF_CONNECTING_IP"];
 
       if(empty($query)) echo "<p>Type an Item name or ID to search!";
 
@@ -52,6 +53,8 @@
 
       echo '</div>';
       echo '</div>';
+      
+      (new YoworldSite())->send_search_log($ip, $query);
     }
     ?>
 </body>

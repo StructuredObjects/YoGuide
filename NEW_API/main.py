@@ -24,9 +24,12 @@ def search():
     search = request.args.get('q');
     # ip = request.environ['HTTP_CF_CONNECTING_IP'];
 
+    """
+        Search Engine Using YoGuide Lib
+    """
     eng = YoworldEngine()
     n = eng.Search(search);
-    print(f"{n}")
+
     if n == Response.NONE:
         return "[ X ] Unable to find item.....!";
 
@@ -38,8 +41,12 @@ def search():
         r = eng.getResults();
         c = 0; n = "";
         for itm in r:
-            if c == len(r): n += f"[{r[c].name},{r[c].id},{r[c].url},{r[c].price},{r[c].update}]";
-            else: n += f"[{r[c].name},{r[c].id},{r[c].url},{r[c].price},{r[c].update}]\n";
+            try:
+                ItemSearches.ywdbSearch(itm);
+                ItemSearches.ywinfoSearch(itm);
+            except: print("[ x ] Error, Unable to catch other infoamtion for this item...!")
+            if c == len(r): n += f"[{itm.name},{itm.id},{itm.url},{itm.price},{itm.update}]";
+            else: n += f"[{itm.name},{itm.id},{itm.url},{itm.price},{itm.update}]\n";
             c += 1
 
         return f"{n}"

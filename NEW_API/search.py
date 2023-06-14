@@ -21,7 +21,8 @@ elif n == Response.EXACT:
 
     r = eng.getResults();
     gg = ItemSearch.ywdbSearch(r[0]);
-    print(f"Item: {r[0].name} | {r[0].id} | {r[0].price} | {r[0].update} | {gg.in_store}");
+    nn = ItemSearch.ywinfoSearch(r[0])
+    print(f"Item: {r[0].name} | {r[0].id} | {r[0].price} | {r[0].update} | {r[0].category}");
     exit(0);
 
 elif n == Response.EXTRA:

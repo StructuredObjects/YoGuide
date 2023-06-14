@@ -15,7 +15,7 @@ class ItemSearch:
 
         info = json.loads(results)['response'];
 
-        item.gender = info['gender']
+        item.gender = info['gender'];
         item.is_tradable = info['is_tradable'];
         item.is_free_gift = info['can_gift'];
         item.category = info['category'];
@@ -29,3 +29,41 @@ class ItemSearch:
         else: item.store_price = "0";
         
         return item;
+
+    @staticmethod
+    def ywinfoSearch(item: Item) -> bool:
+        req = requests.get(f"https://api.yoworld.info/api/items/{item.id}");
+        if req.status_code != 200:
+            print("[ X ] Error, Unable to connect to 'api.yoworld.info'....!");
+            return False;
+
+        results = req.text;
+
+        obj = json.loads(results);
+        obj['data']['item']['price_proposals'];
+
+        lines = f"{obj}".replace(", ", "\n").replace("'", "").replace("\"", "").replace(", ", "").replace("{", "").replace("}", "").split("\n");
+
+        history = {};
+        
+        search = False;
+        time = "";
+        price = "";
+        approved = "";
+
+        for line in lines:
+            if "price_proposals" in line:
+                search = True;
+
+            if search:
+                if "updated_at: " in line:
+                    time = line.replace("updated_at: ", "");
+                
+                if "price: " in line:
+                    price = line.replace("price: ", "");
+
+                if "username: " in line:
+                    approved = line.replace("username: ", "");
+                    history[price] = f"{time}//{approved}";
+
+        return True;

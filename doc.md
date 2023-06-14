@@ -4,7 +4,7 @@
 
 # Introducing our API documentation!
 
-Here we host muliple endpoints for developers to create such yoworld tools and distribute them to the community
+Here we host muliple endpoints for developers to create such yoworld tools and distribute them to the community 
 
 ### Progress || Task List
 - [x] Item Search Endpoint
