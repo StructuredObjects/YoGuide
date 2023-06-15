@@ -1,4 +1,4 @@
-import os, enum
+import os, enum, datetime
 
 class LogDBs:
     search      = "logs/searches.log";
@@ -6,7 +6,7 @@ class LogDBs:
     visits      = "logs/visits.log";
     requests    = "logs/requests.log";
 
-class LogTypes():
+class LogTypes(enum.Enum):
     NONE        = 0;
     VISIT       = 1;
     SEARCH      = 2;
@@ -26,7 +26,8 @@ class Logger():
     """
     @staticmethod
     def newLog(appt: AppType, logt: LogTypes, *args) -> None:
-        current_time = ""
+        if len(args) < 1: return;
+        current_time = f"{datetime.datetime.now()}".split(".")[0].replace(" ", "-");
         app = Logger.app2str(appt);
         db = open(Logger.get_db_path(logt), "a");
         if appt == AppType.BOT:
@@ -37,12 +38,12 @@ class Logger():
             db.write(f"('{app}','{args[0]}','{args[1]}','{args[2]}','{current_time}')\n");
         elif appt == AppType.DESKTOP:
             ## Query, IP, PC_INFO
-            db.write(f"('{app}','{args[0]}','{args[1]}','{args[2]}','{current_time}')\n");
+            db.write(f"('{app}','{args[0]}','{args[1]}','{current_time}')\n");
 
         db.close();
 
     @staticmethod
-    def app2str(appt: AppType) -> str, str:
+    def app2str(appt: AppType) -> str:
         if appt == AppType.BOT:
             return "DISCORDBOT";
         elif appt == AppType.SITE:
@@ -54,13 +55,13 @@ class Logger():
 
     @staticmethod
     def get_db_path(logt: LogTypes) -> str:
-        if logt == LogTypes.visits:
+        if logt == LogTypes.VISIT:
             return "logs/visits.log";
-        elif logt == LogTypes.searches:
-            return "logs/searches";
-        elif logt == LogTypes.changes:
+        elif logt == LogTypes.SEARCH:
+            return "logs/searches.log";
+        elif logt == LogTypes.CHANGE:
             return "logs/changes.log";
-        elif logt == LogTypes.requests:
+        elif logt == LogTypes.REQUEST:
             return "logs/requests.log";
 
         return "";

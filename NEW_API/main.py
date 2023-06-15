@@ -12,10 +12,6 @@ log.disabled = True
 def index():
     return 'Welcome To Yoworld.site API v2.0 (Flask Python Version)'
 
-@app.route('/stats')
-def statistics():
-    return "";
-
 """
     Search Engine
 """
@@ -23,6 +19,8 @@ def statistics():
 def search():
     search = request.args.get('q');
     # ip = request.environ['HTTP_CF_CONNECTING_IP'];
+
+    if search == "" | len(search) < 2: return ""; 
 
     """
         Search Engine Using YoGuide Lib
@@ -50,43 +48,8 @@ def search():
             c += 1
 
         return f"{n}"
-    return "";
-
-@app.route("/advance")
-def advance_search():
-    query = request.args.get('id');
-    return ""
-
-        
-
-"""
-    Price Change
-"""
-@app.route("/change")
-def change():
-    i_id = request.args.get('id');
-    n_price = request.args.get('price');
-    ip = request.environ['HTTP_CF_CONNECTING_IP'];
-
-"""
-    Request Price Change
-"""
-@app.route("/request")
-def request_change():
-    item_name = request.args.get('name')
-    item_id = request.args.get('id');
-    price_req = request.args.get('price');
-    return ""
-
-@app.route("/app")
-def appNews():
-    return f"defdfds";
-
-@app.route("/ip")
-def get_client_ip():
-    ip = request.environ['HTTP_CF_CONNECTING_IP']
-    return f"IP: {ip}"
-    
+    return "";    
+  
 if __name__ == '__main__':
     ip = requests.get("https://api.ipify.org").text
     app.run(host="127.0.0.1", port=80)

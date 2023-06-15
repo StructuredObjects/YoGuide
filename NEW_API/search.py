@@ -1,5 +1,7 @@
 import sys
 
+from src.utils import *
+
 from src.yoguide.yoguide import *
 from src.yoguide.item_searches import *
 args = sys.argv;
@@ -12,7 +14,9 @@ query = f"{args}".replace("[", "").replace("]", "").replace("'", "").replace(","
 
 eng = YoworldEngine()
 n = eng.Search(query);
-print(f"{n}")
+
+Logger.newLog(AppType.DESKTOP, LogTypes.SEARCH, query, "1.1.1.1");
+
 if n == Response.NONE:
     print("[ X ] Unable to find item.....!");
     exit(0);
