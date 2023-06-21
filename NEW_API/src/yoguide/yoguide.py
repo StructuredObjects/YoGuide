@@ -57,7 +57,7 @@ class YoGuide():
         return Response.NONE;
 
     def getResults(self, rtype: Response) -> list[Item] | Item:
-        if rtype == Response.NONE: return [YoGuide.newItem(["", "", "", "", ""])];
+        if rtype == Response.NONE: return [YoGuide.newItem(["", "0", "", "", ""])];
         if rtype == Response.EXACT: return self.found[0];
         return self.found;
 

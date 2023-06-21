@@ -43,12 +43,21 @@ class MyClient(discord.Client):
                 Usage: change <item_id> <new_price>
             """
 
+            if len(msg_args) != 3:
+                await message.channel.send(embed=discord.Embed(title="YoGuide | Price Change", description="Error, You must provide an item ID and new price...!\nUsage: !change <item_id> <new_price>\nExample #1: !change 26295 290m", color=discord.Colour.red()));
+
+            item_id = msg_args[1];
+            new_price = msg_args[2];
+
+
+        elif msg == f"{Config.prefix}search" or msg == f"{Config.prefix}search ": await message.channel.send(embed=discord.Embed(title="YoGuide | Item Search", description="Error, You must provide a item name or item ID...!\nUsage: !search <item_name_or_id>\nExample #1: !search cupids wing\nExample #2: !search 26295", color=discord.Colour.red()));
         elif f"{Config.prefix}search" in msg:
             """ 
                 Command: search
                 Usage: search <query>
             """
             query = msg.replace(f"{msg_args[0]} ", "")
+
             eng = YoGuide();
             check = eng.Search(query);
             results = eng.getResults(check);
@@ -78,5 +87,5 @@ class MyClient(discord.Client):
 intents = discord.Intents.default()
 intents.message_content = True
 client = MyClient(intents=intents)
-client.run('MTEyMTA0NDgxNDA3MTM0NTIyMw.GMNQPo.uWOZ3CnLAPOz_xkOMrPWYGbTQRAntq_gDKwlng')
+client.run('MTEyMTA0NDgxNDA3MTM0NTIyMw.GfQbmI.eLzxFflBp8Ua8gXkbKeD0_AkQ_Ms7SgsaOj278')
 
