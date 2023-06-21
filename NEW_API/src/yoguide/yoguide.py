@@ -26,13 +26,15 @@ class Item():
     gender:         str;
     xp:             str;
     categroy:       str;
+    
+
 
 class Response(enum.Enum):
     NONE    = 0;
     EXACT   = 1;
     EXTRA   = 2;
 
-class YoworldEngine():
+class YoGuide():
     items: list[Item];
     found: list[Item];
 
@@ -54,7 +56,9 @@ class YoworldEngine():
 
         return Response.NONE;
 
-    def getResults(self) -> list[Item]:
+    def getResults(self, rtype: Response) -> list[Item] | Item:
+        if rtype == Response.NONE: return [YoGuide.newItem(["", "", "", "", ""])];
+        if rtype == Response.EXACT: return self.found[0];
         return self.found;
 
     def __retriveItems(self) -> None:
@@ -68,9 +72,9 @@ class YoworldEngine():
         """
         for line in lines:
             if len(line) < 5: continue;
-            info = YoworldEngine.parseLine(line);
+            info = YoGuide.parseLine(line);
             if len(info) == 5:
-                self.items.append(YoworldEngine.newItem(info));
+                self.items.append(YoGuide.newItem(info));
     
     def __searchByName(self) -> list[Item]:
         self.found = []
@@ -113,8 +117,8 @@ class YoworldEngine():
 
         for line in lines:
             if len(line) < 5: continue;
-            info = YoworldEngine.parseLine(line)
-            item_info = YoworldEngine.newItem(YoworldEngine.parseLine(line));
+            info = YoGuide.parseLine(line)
+            item_info = YoGuide.newItem(YoGuide.parseLine(line));
             if len(info) == 5:
                 if item_info.id == itm.id:
                     new_db += f"('{itm.name}','{itm.id}','{itm.url}','{n_price}','{new_update}')\n";
@@ -135,7 +139,7 @@ class YoworldEngine():
         return line.replace("(", "").replace(")", "").replace("'", "").split(",");
 
     @staticmethod
-    def newItem(arr: list) -> Item:
+    def newItem(arr: list[str]) -> Item:
         itm = Item();
         itm.name = arr[0]; itm.id = int(arr[1]); itm.url = arr[2]; 
         itm.price = arr[3]; itm.update = arr[4];
@@ -146,3 +150,22 @@ class YoworldEngine():
             itm.price = f"{arr[3]}/{conv_coins}c";
         
         return itm;
+
+    @staticmethod
+    def item2dict(itm: Item) -> dict:
+        return {"Name": itm.name,
+                    "ID": itm.id,
+                    "Price": itm.price,
+                    "Update": itm.update};
+
+    @staticmethod
+    def addInfo(itm: Item, j: dict) -> dict:
+        j['Tradable'] = itm.is_tradable;
+        j['Giftable'] = itm.is_giftable;
+        j['In Store'] = itm.in_store;
+        j['Store Price'] = itm.store_price;
+        j['Gender'] = itm.gender;
+        j['XP'] = itm.xp;
+        j['Category'] = itm.category;
+
+        return j;

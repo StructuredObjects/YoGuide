@@ -17,7 +17,7 @@ class ItemSearch:
 
         item.gender = info['gender'];
         item.is_tradable = info['is_tradable'];
-        item.is_free_gift = info['can_gift'];
+        item.is_giftable = info['can_gift'];
         item.category = info['category'];
         item.xp = info['xp'];
 

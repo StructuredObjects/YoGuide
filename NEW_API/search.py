@@ -1,6 +1,6 @@
 import sys
 
-from src.utils import *
+from src.logger import *
 
 from src.yoguide.yoguide import *
 from src.yoguide.item_searches import *
@@ -26,7 +26,7 @@ elif n == Response.EXACT:
     r = eng.getResults();
     gg = ItemSearch.ywdbSearch(r[0]);
     nn = ItemSearch.ywinfoSearch(r[0])
-    print(f"Item: {r[0].name} | {r[0].id} | {r[0].price} | {r[0].update} | {r[0].category}");
+    print(f"Item: {r[0].name} | {r[0].id} | {r[0].price} | {r[0].update} | {r[0].is_tradable}");
     exit(0);
 
 elif n == Response.EXTRA:

@@ -27,9 +27,11 @@ class Logger():
     @staticmethod
     def newLog(appt: AppType, logt: LogTypes, *args) -> None:
         if len(args) < 1: return;
+        
         current_time = f"{datetime.datetime.now()}".split(".")[0].replace(" ", "-");
         app = Logger.app2str(appt);
         db = open(Logger.get_db_path(logt), "a");
+
         if appt == AppType.BOT:
             ## Query
             db.write(f"('{app}','{args[0]}','{current_time}')\n");
