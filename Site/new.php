@@ -1,12 +1,19 @@
 <?php
 
-class Item 
+class Item
 {
     public $name;
     public $id;
     public $url;
     public $price;
     public $update;
+
+    function __construct(array $arr)
+    {
+        if(count($arr) < 5) return;
+        $this->name = $arr[0]; $this->id = intval($arr[1]); $this->url = $arr[2];
+        $this->price = $arr[3]; $this->update = $arr[4];
+    }
 }
 
 enum Response
@@ -29,30 +36,28 @@ class YoGuide
     
     function search(string $query): Response
     {
-            $found = array();
-            $resp = file_get_contents("https://api.yoguide.info/search?q=26295");
-    
-            echo "\x1b[31mResponse Test\x1b[0m: ". $resp. "\n";
-            if(!str_starts_with($resp, "[") && !str_ends_with($resp, "]"))
-                    die("[ X ] Unable to connect to YoGuide's API");
-    
-            if(!str_contains($resp, "\n"))
-            {
-                    $info = YoGuide::parse_line($resp);
-                    array_push($this->found, (new Item($info))); // APPEND TO $this->found!
-                    return Response::EXACT;
-            }
-    
-            $lines = explode("\n", $resp);
-    
-            foreach($lines as $line)
-            {
-                    $info = YoGuide::parse_line($resp);
-                    array_push($found, (new Item($info)));
-            }
-    
-            if(count($found) > 1) return Response::EXTRA;
-            return Response::NONE;
+        $resp = file_get_contents("https://api.yoguide.info/search?q=$query");
+
+        if(!str_starts_with($resp, "[") && !str_ends_with($resp, "]"))
+            die("[ X ] Unable to connect to YoGuide's API");
+
+        if(!str_contains($resp, "\n"))
+        {
+            $info = YoGuide::parse_line($resp);
+            array_push($this->found, (new Item($info))); // APPEND TO $this->found!
+            return Response::EXACT;
+        }
+
+        $lines = explode("\n", $resp);
+
+        foreach($lines as $line)
+        {
+            $info = YoGuide::parse_line($resp);
+            array_push($found, (new Item($info)));
+        }
+
+        if(count($found) > 1) return Response::EXTRA;
+        return Response::NONE;
     }
     
 
