@@ -107,7 +107,9 @@ class YoGuide():
 
         return Item();
 
-    def __changePrice(self, itm: Item, n_price: str) -> bool:
+    @staticmethod
+    def changePrice(itm: Item, n_price: str) -> bool:
+        r = False;
         db = open(db_path, "r");
 
         lines = db.read().split("\n");
@@ -122,6 +124,7 @@ class YoGuide():
             if len(info) == 5:
                 if item_info.id == itm.id:
                     new_db += f"('{itm.name}','{itm.id}','{itm.url}','{n_price}','{new_update}')\n";
+                    r = True;
                 else:
                     new_db += f"{line}\n";
         
@@ -131,8 +134,13 @@ class YoGuide():
         newdb.write(new_db);
         newdb.close();
 
-        self.__retriveItems();
-
+        return r;
+    
+    @staticmethod
+    def isID(q: str) -> bool:
+        if q.isdigit() or isinstance(q, int):
+            return True;
+        return False;
 
     @staticmethod
     def parseLine(line: str) -> list:

@@ -1,6 +1,7 @@
 import logging, requests
 
 from flask                       import Flask, request
+from src.logger                  import *
 from src.yoguide.yoguide         import *
 from src.yoguide.item_searches   import *
 
@@ -19,31 +20,41 @@ def index():
 @app.route('/search')
 def search():
     search = request.args.get('q');
-    # ip = request.environ['HTTP_CF_CONNECTING_IP'];
+    ip = "1.1.1.1";
+    
+    if "HTTP_CF_CONNECTING_IP" in request.environ:
+        ip = request.environ['HTTP_CF_CONNECTING_IP'];
 
     if search == "" or len(search) < 2: return ""; 
 
     """
         Search Engine Using YoGuide Lib
     """
-    eng = YoworldEngine()
+    eng = YoGuide()
     n = eng.Search(search);
 
     if n == Response.NONE:
         return "[ X ] Unable to find item.....!";
 
-    elif n == Response.EXACT:
-        r = eng.getResults();
+    if ip == "66.45.249.155":
+        Logger.newLog(AppType.BOT, LogTypes.SEARCH, search, ip);
+    elif ip == "216.219.86.171":
+        Logger.newLog(AppType.SITE, LogTypes.SEARCH, search, ip);
+    else:
+        Logger.newLog(AppType.DESKTOP, LogTypes.SEARCH, search, ip);
+
+    if n == Response.EXACT:
+        r = eng.getResults(n);
         try:
-            ItemSearch.ywdbSearch(r[0]);
-            ItemSearch.ywinfoSearch(r[0]);
-            return f"[{r[0].name},{r[0].id},{r[0].url},{r[0].price},{r[0].update},{r[0].is_tradable},{r[0].is_giftable},{r[0].in_store},{r[0].store_price},{r[0].gender},{r[0].xp},{r[0].category}]";
+            ItemSearch.ywdbSearch(r);
+            ItemSearch.ywinfoSearch(r);
+            return f"[{r.name},{r.id},{r.url},{r.price},{r.update},{r.is_tradable},{r.is_giftable},{r.in_store},{r.store_price},{r.gender},{r.xp},{r.category}]";
         except Exception as e:
             print(f"[ X ] Unable to get extra info {e}...");
-            return f"[{r[0].name},{r[0].id},{r[0].url},{r[0].price},{r[0].update}]";
+            return f"[{r.name},{r.id},{r.url},{r.price},{r.update}]";
 
     elif n == Response.EXTRA:
-        r = eng.getResults();
+        r = eng.getResults(n);
         c = 0; n = "";
         for itm in r:
             try:
