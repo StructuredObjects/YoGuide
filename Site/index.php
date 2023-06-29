@@ -1,4 +1,4 @@
-<?php include("lib.php"); ?>
+<?php include("yoguide.php"); ?>
 <html>
 
 <head>
@@ -37,24 +37,43 @@
 
       if(empty($query)) echo "<p>Type an Item name or ID to search!";
 
-      $results = (new YoworldSite())->searchItem($query);
-      
-      echo '<div class="result_box">';
-      echo '<div class="grid-container">';
-      foreach($results as $item)
+      $eng = new YoGuide();
+      $r = $eng->Search("cupids bow");
+      $results = $eng->getResults($r);
+
+      if($r == Response::NONE)
       {
+        echo "No items found with your search query......!";
+      } else if($r == Response::EXACT)
+      {
+        echo '<div class="result_box">';
+        echo '<div class="grid-container">';
         echo '<div class="grid-item">';
-        echo '<p class="item-name" style="font-size: 15px; color: #fff">'. $item->name. '</p>';
-        echo '<img style="padding-top: 20px;" src="'. $item->url. '" />';
-        echo '<p style="font-size: 15px;color: #fff">#'. $item->id. '</p>';
-        echo '<p style="font-size: 15px;color: #fff">Price: '. $item->price. '</p>';
+        echo '<p class="item-name" style="font-size: 15px; color: #fff">'. $results->name. '</p>';
+        echo '<img style="padding-top: 20px;" src="'. $results->url. '" />';
+        echo '<p style="font-size: 15px;color: #fff">#'. $results->id. '</p>';
+        echo '<p style="font-size: 15px;color: #fff">Price: '. $results->price. '</p>';
+        echo '</div>';
+        echo '</div>';
+        echo '</div>';
+      } else if($r == Response::EXTRA)
+      { 
+        echo '<div class="result_box">';
+        echo '<div class="grid-container">';
+        foreach($results as $item)
+        {
+          echo '<div class="grid-item">';
+          echo '<p class="item-name" style="font-size: 15px; color: #fff">'. $item->name. '</p>';
+          echo '<img style="padding-top: 20px;" src="'. $item->url. '" />';
+          echo '<p style="font-size: 15px;color: #fff">#'. $item->id. '</p>';
+          echo '<p style="font-size: 15px;color: #fff">Price: '. $item->price. '</p>';
+          echo '</div>';
+        }
+        echo '</div>';
         echo '</div>';
       }
-
-      echo '</div>';
-      echo '</div>';
       
-      (new YoworldSite())->send_search_log($ip, $query);
+      YoGuide::send_search_log($ip, $query);
     }
     ?>
 </body>
