@@ -46,6 +46,7 @@ img {
 */
 .result_box {
     margin: auto;
+    margin-top: 20px;
     border-style: solid;
     border-color: #ff00;
     max-width: 500px;
