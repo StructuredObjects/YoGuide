@@ -37,28 +37,15 @@ class YoGuide
     public function Search(string $query): Response
     {
         $this->found = array();
-        $resp = file_get_contents("https://api.yoguide.info/search?q=$query");
+        $cSession = curl_init(); 
+        curl_setopt($cSession,CURLOPT_URL, "https://api.yoguide.info/search?q=$query");
+        curl_setopt($cSession,CURLOPT_RETURNTRANSFER,true);
+        $resp = curl_exec($cSession);
 
-        if(!str_starts_with($resp, "[") && !str_ends_with($resp, "]"))
-            die("[ X ] Unable to connect to YoGuide's API");
+        var_dump($resp);
+        
+        die();
 
-        if(!str_contains($resp, "\n"))
-        {
-            $info = YoGuide::parse_line($resp);
-            array_push($this->found, (new Item($info))); // APPEND TO $this->found!
-            return Response::EXACT;
-        }
-
-        $lines = explode("\n", $resp);
-
-        foreach($lines as $line)
-        {
-            $itm = YoGuide::parse_line($line);
-            array_push($this->found, (new Item($itm)));
-        }
-
-        if(count($this->found) > 1) return Response::EXTRA;
-        return Response::NONE;
     }
     
     public static function rmStrings(string $str, array $arr): string 
