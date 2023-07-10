@@ -34,6 +34,15 @@ def search():
     n = eng.Search(search);
 
     if n == Response.NONE:
+        if search.isdigit() or isinstance(search, int):
+        n = YoGuide.newItem(["", search, "", "", ""])
+        ywdb_item = ywdbSearch(n, True);
+        ywinfo_item = ywinfoSearch(n);
+
+        if n.name != "":
+            return f"[{n.name},{n.id},{n.url},{n.price},{n.update},{n.is_tradable},{n.is_giftable},{n.in_store},{n.store_price},{n.gender},{n.xp},{n.category}]";
+
+
         return "[ X ] Unable to find item.....!";
 
     if ip == "66.45.249.155":

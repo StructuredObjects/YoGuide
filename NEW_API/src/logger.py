@@ -58,12 +58,12 @@ class Logger():
     @staticmethod
     def get_db_path(logt: LogTypes) -> str:
         if logt == LogTypes.VISIT:
-            return "logs/visits.log";
+            return LogDBs.visits;
         elif logt == LogTypes.SEARCH:
-            return "logs/searches.log";
+            return LogDBs.search;
         elif logt == LogTypes.CHANGE:
-            return "logs/changes.log";
+            return LogDBs.change;
         elif logt == LogTypes.REQUEST:
-            return "logs/requests.log";
+            return LogDBs.requests;
 
         return "";

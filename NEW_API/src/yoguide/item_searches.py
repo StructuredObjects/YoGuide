@@ -4,9 +4,12 @@ from .yoguide import *
 
 class ItemSearch:
     @staticmethod
-    def ywdbSearch(item: Item) -> None:
+    def ywdbSearch(item: Item, add_main_info: bool = False, iid: str = "") -> None:
         heads = {"Content-Type": "application/x-www-form-urlencoded"};
-        id = {"iid": f"{item.id}"};
+
+        if iid != "": id = {"iid": f"{iid}"};
+        else: id = {"iid": f"{item.id}"};
+        
         results = requests.post("https://yoworlddb.com/scripts/getItemInfo.php", headers=heads, data=id).text;
 
         if not results.startswith("{") or not results.endswith("}"):
@@ -14,6 +17,10 @@ class ItemSearch:
             return;
 
         info = json.loads(results)['response'];
+
+        if add_main_info:
+            item.name = info['item_name'];
+            item.url = "https://yw-web.yoworld.com/cdn/items/" + item.id[:2] + "/" + item.id[2:4] + "/" + item.id + "/" + item.id + "_60_60.gif"
 
         item.gender = info['gender'];
         item.is_tradable = info['is_tradable'];
@@ -31,7 +38,7 @@ class ItemSearch:
         return item;
 
     @staticmethod
-    def ywinfoSearch(item: Item) -> bool:
+    def ywinfoSearch(item: Item, add_main_info: bool = False) -> bool:
         req = requests.get(f"https://api.yoworld.info/api/items/{item.id}");
         if req.status_code != 200:
             print("[ X ] Error, Unable to connect to 'api.yoworld.info'....!");

@@ -45,14 +45,16 @@ class YoGuide():
         self.query = q;
         if q.isdigit() or isinstance(q, int):
             self.found = [self.__searchByID()];
-            return Response.EXACT;
+            if self.found[0].name != "":
+                return Response.EXACT;
 
         self.__searchByName();
     
         if len(self.found) > 1:
             return Response.EXTRA;
         elif len(self.found) == 1:
-            return Response.EXACT;
+            if self.found[0].name != "":
+                return Response.EXACT;
 
         return Response.NONE;
 
@@ -105,7 +107,7 @@ class YoGuide():
             if f"{item.id}" == f"{self.query}":
                 return item;
 
-        return Item();
+        return YoGuide.newItem(["", "0", "", "", ""]);
 
     @staticmethod
     def changePrice(itm: Item, n_price: str) -> bool:
@@ -135,6 +137,13 @@ class YoGuide():
         newdb.close();
 
         return r;
+
+    @staticmethod
+    def add_new_item(item: Item) -> bool:
+        db = open(db_path, "a");
+        db.write(f"('{item.name}','{item.id}','{item.url}','0','0')\n");
+        db.close()
+        return True;
     
     @staticmethod
     def isID(q: str) -> bool:
@@ -153,9 +162,14 @@ class YoGuide():
         itm.price = arr[3]; itm.update = arr[4];
 
         if arr[3].endswith("yc"):
-            yc = arr[3].replace("yc", "").replace("/", "").replace(" ", "").replace("In-store", "").replace("In-Store", "");
+            yc = arr[3].replace("yc", "").replace("/", "").replace(" ", "").lower().replace("in-store", "");
             conv_coins = int(yc)*60000;
             itm.price = f"{arr[3]}/{conv_coins}c";
+
+        
+        if itm.price != "": 
+            itm.price = "N/A";
+            itm.update = "N/A";
         
         return itm;
 

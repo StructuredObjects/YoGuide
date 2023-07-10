@@ -6,6 +6,7 @@ from src.yoguide.item_searches  import *
 
 class Config:
     prefix = "!"
+    yc_rate = 60000
     help_list = {"List of help commands ( This Message )": [f"{prefix}help", False],
                  "Item Search": [f"{prefix}item <item_name/id>", False],
                  "Advance Item Search": [f"{prefix}ai <item_id>", False],
@@ -37,17 +38,76 @@ class MyClient(discord.Client):
             """ Help Command """
             await self.client.embed_w_fields("Help", "List Of Commands!", Config.help_list, "")
 
+        if f"{Config.prefix}fs" in msg:
+            """ 
+                Command: fs
+                Usage: fs <item_id> <fs_price> 
+            """
+            if len(msg_args) < 2:
+                await self.client.embed_w_fields("fs | Error", "Ivalid arguments provided\nUsage: 26295 290m");
+                return;
+
+            iid = msg_args[1];
+            price = "n/a";
+            if len(msg_args) == 3: price = msg_args[2];
+
+            eng = YoGuide();
+            resp = eng.Search(iid);
+
+            if resp == Response.EXACT:
+                result = eng.getResults(resp);
+                chan = client.get_channel('1083572855830237185');
+                gg = MessageUtils(message).createEmbed("WTB", f"User: <@{message.author.id}> is selling > '{result.name}'", YoGuide.item2dict(result), result.url)
+                await chan.send(embed=gg);
+                # await self.client.displayItem("WTB", f"User: <@{message.author.id}> want's to buy '{result.name}'", YoGuide.item2dict(result), "", channel);
+                
+
+        # if msg == f"{Config.prefix}wtb"
+
+        if f"{Config.prefix}rate" in msg:
+            if len(msg_args) != 2:
+                await self.client.embed_w_fields("YC Rate Change | Error", f"Invalid arguments provided\nUsage {Config.prefix}rate <yc_rate>", {}, "");
+                return;
+            
+            Config.yc_rate = int(msg_args[1]);
+            self.client.embed_w_fields("YC Rate Change", f"YC Rate successfull5y changed to {msg_args[1]}", {}, "");
+
         if f"{Config.prefix}change" in msg:
             """ 
                 Command: change
                 Usage: change <item_id> <new_price>
             """
 
+            if f"{message.guild.id}" != "908592606634729533" and f"{message.guild.id}" != "1110583722190831688":
+                await message.channel.send(embed=discord.Embed(title="YoGuide | Price Change", description="Error, You can only change prices using this command in 'YoPriceGuide | PNKM' discord server!", color=discord.Colour.red()));
+                await message.channe.send("https://discord.gg/pnkm");
+                return
+
             if len(msg_args) != 3:
                 await message.channel.send(embed=discord.Embed(title="YoGuide | Price Change", description="Error, You must provide an item ID and new price...!\nUsage: !change <item_id> <new_price>\nExample #1: !change 26295 290m", color=discord.Colour.red()));
+                return
 
             item_id = msg_args[1];
             new_price = msg_args[2];
+
+            if not YoGuide.isID(item_id):
+                await self.client.embed_w_fields("YoGuide | Change", "Invalid item ID provided....\nUsage: !change <item_id> <new_price>\nExample: !change 26295 290m", {}, "");
+                return;
+
+            eng = YoGuide();
+            check = eng.Search(item_id);
+            
+            if check != Response.EXACT:
+                await self.client.embed_w_fields("YoGuide | Change", "Item was not found... Must be an invalid item ID!", {}, "");
+                return;
+
+            r = eng.getResults(check);
+
+            if not YoGuide.changePrice(r, new_price):
+                await self.client.embed_w_fields("YoGuide | Change", "Item could not be updated....! Contact owner for more info.", {}, "");
+                return;
+
+            await self.client.embed_w_fields("YoGuide | Change", f"Item: {r.name} sucessfully updated!",{}, "");
 
 
         elif msg == f"{Config.prefix}search" or msg == f"{Config.prefix}search ": await message.channel.send(embed=discord.Embed(title="YoGuide | Item Search", description="Error, You must provide a item name or item ID...!\nUsage: !search <item_name_or_id>\nExample #1: !search cupids wing\nExample #2: !search 26295", color=discord.Colour.red()));
@@ -63,11 +123,25 @@ class MyClient(discord.Client):
             results = eng.getResults(check);
 
             if check == Response.NONE:
+                if query.isdigit() or isinstance(query, int):
+                    n = YoGuide.newItem(["", f"{query}", "", "", ""])
+                    n.id = query;
+                    ywdb_item = ItemSearch.ywdbSearch(n, True, query);
+                    ywinfo_item = ItemSearch.ywinfoSearch(n);
+
+                    if n.name != "":
+                        gg = YoGuide.addInfo(ywdb_item, YoGuide.item2dict(ywdb_item));
+                        await self.client.displayItem("YoGuide | Item Search", "Item found!", gg, ywdb_item.url);
+                        YoGuide.add_new_item(ywdb_item)
+                        return;
+                    
                 await message.channel.send(embed=discord.Embed(title="YoGuide | Item Search", description="No items found....!", color=discord.Colour.red()));
 
             if check == Response.EXACT:
 
-                ItemSearch.ywdbSearch(results);
+                try: ItemSearch.ywdbSearch(results);
+                except: print("[ X ] Error, Unable to fetch extra info....!");
+
                 gg = YoGuide.addInfo(results, YoGuide.item2dict(results));
                 await self.client.displayItem("YoGuide | Item Search", "Item found!", gg, results.url);
 
@@ -87,5 +161,5 @@ class MyClient(discord.Client):
 intents = discord.Intents.default()
 intents.message_content = True
 client = MyClient(intents=intents)
-client.run('MTEyMTA0NDgxNDA3MTM0NTIyMw.GfQbmI.eLzxFflBp8Ua8gXkbKeD0_AkQ_Ms7SgsaOj278')
+client.run('')
 
