@@ -1,4 +1,4 @@
-import requests, enum, datetime
+import requests, enum, datetime, requests, json
 
 db_path = "items.txt";
 
@@ -25,7 +25,7 @@ class Item():
     store_price:    str;
     gender:         str;
     xp:             str;
-    categroy:       str;
+    category:       str;
     
 
 
@@ -44,10 +44,29 @@ class YoGuide():
     def Search(self, q: str) -> Response:
         self.query = q;
         if q.isdigit() or isinstance(q, int):
+            """
+                Search for item ID in our database
+            """
             self.found = [self.__searchByID()];
             if self.found[0].name != "":
                 return Response.EXACT;
 
+            """
+                Search item ID using YoworldDB.com and Yoworld.info API
+                as an alternative route and//or missing the searched item in our database
+            """
+            n = YoGuide.newItem(["", f"{q}", "", "", ""])
+            ywdb_item = ItemSearch.ywdbSearch(n, True, q);
+            ItemSearch.ywinfoSearch(n);
+
+            YoGuide.add_new_item(ywdb_item)
+            self.found = [n];
+            if self.found[0].name != "":
+                return Response.EXACT;
+
+        """
+            Search for item name in our database!
+        """
         self.__searchByName();
     
         if len(self.found) > 1:
@@ -166,8 +185,7 @@ class YoGuide():
             conv_coins = int(yc)*60000;
             itm.price = f"{arr[3]}/{conv_coins}c";
 
-        
-        if itm.price != "": 
+        if itm.price == "" or itm.price == "0": 
             itm.price = "N/A";
             itm.update = "N/A";
         
@@ -191,3 +209,79 @@ class YoGuide():
         j['Category'] = itm.category;
 
         return j;
+
+
+class ItemSearch:
+    @staticmethod
+    def ywdbSearch(item: Item, add_main_info: bool = False, iid: str = "") -> None:
+        heads = {"Content-Type": "application/x-www-form-urlencoded"};
+
+        if iid != "": id = {"iid": f"{iid}"};
+        else: id = {"iid": f"{item.id}"};
+        
+        results = requests.post("https://yoworlddb.com/scripts/getItemInfo.php", headers=heads, data=id).text;
+
+        if not results.startswith("{") or not results.endswith("}"):
+            print(f"[ X ] (INVALID_JSON) Error, Unable to get item information....!\n\n{results}");
+            return;
+
+        info = json.loads(results)['response'];
+
+        if add_main_info:
+            item.name = info['item_name'];
+            n = str(iid)
+            if item.id: n = str(item.id);
+            item.url = f"https://yw-web.yoworld.com/cdn/items/{n[:2]}/{n[2:4]}/{n}/{n}_60_60.gif"
+
+        item.gender = info['gender'];
+        item.is_tradable = info['is_tradable'];
+        item.is_giftable = info['can_gift'];
+        item.category = info['category'];
+        item.xp = info['xp'];
+
+        if info['active_in_store'] == "1": item.in_store = True;
+        else: item.in_store = False;
+
+        if info['price_coins'] != "0": item.store_price = f"{info['price_coins']}c";
+        elif info['price_cash'] != "0": item.store_price = f"{info['price_cash']}yc"
+        else: item.store_price = "0";
+        
+        return item;
+
+    @staticmethod
+    def ywinfoSearch(item: Item, add_main_info: bool = False) -> bool:
+        req = requests.get(f"https://api.yoworld.info/api/items/{item.id}");
+        if req.status_code != 200:
+            print("[ X ] Error, Unable to connect to 'api.yoworld.info'....!");
+            return False;
+
+        results = req.text;
+
+        obj = json.loads(results);
+        obj['data']['item']['price_proposals'];
+
+        lines = f"{obj}".replace(", ", "\n").replace("'", "").replace("\"", "").replace(", ", "").replace("{", "").replace("}", "").split("\n");
+
+        history = {};
+        
+        search = False;
+        time = "";
+        price = "";
+        approved = "";
+
+        for line in lines:
+            if "price_proposals" in line:
+                search = True;
+
+            if search:
+                if "updated_at: " in line:
+                    time = line.replace("updated_at: ", "");
+                
+                if "price: " in line:
+                    price = line.replace("price: ", "");
+
+                if "username: " in line:
+                    approved = line.replace("username: ", "");
+                    history[price] = f"{time}//{approved}";
+
+        return True;

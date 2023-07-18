@@ -9,7 +9,7 @@ Linux (Be sure your project directory)
 ```
 pip3 install requests
 sudo apt install git -y
-git clone https://github.com
+git clone https://github.com/StructuredObjects/yoguide.git
 ```
 
 ### Import The Library

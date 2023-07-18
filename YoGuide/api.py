@@ -3,7 +3,6 @@ import logging, requests
 from flask                       import Flask, request
 from src.logger                  import *
 from src.yoguide.yoguide         import *
-from src.yoguide.item_searches   import *
 
 app = Flask(__name__)
 log = logging.getLogger('werkzeug')
@@ -34,15 +33,6 @@ def search():
     n = eng.Search(search);
 
     if n == Response.NONE:
-        if search.isdigit() or isinstance(search, int):
-        n = YoGuide.newItem(["", search, "", "", ""])
-        ywdb_item = ywdbSearch(n, True);
-        ywinfo_item = ywinfoSearch(n);
-
-        if n.name != "":
-            return f"[{n.name},{n.id},{n.url},{n.price},{n.update},{n.is_tradable},{n.is_giftable},{n.in_store},{n.store_price},{n.gender},{n.xp},{n.category}]";
-
-
         return "[ X ] Unable to find item.....!";
 
     if ip == "66.45.249.155":
@@ -67,8 +57,8 @@ def search():
         c = 0; n = "";
         for itm in r:
             try:
-                ItemSearches.ywdbSearch(itm);
-                ItemSearches.ywinfoSearch(itm);
+                ItemSearch.ywdbSearch(itm);
+                ItemSearch.ywinfoSearch(itm);
                 if c == len(r): n += f"[{itm.name},{itm.id},{itm.url},{itm.price},{itm.update},{itm.is_tradable},{itm.is_giftable},{itm.in_store},{itm.store_price},{itm.gender},{itm.xp},{itm.category}]";
                 else: n += f"[{itm.name},{itm.id},{itm.url},{itm.price},{itm.update},{itm.is_tradable},{itm.is_giftable},{itm.in_store},{itm.store_price},{itm.gender},{itm.xp},{itm.category}]\n";
             except: 

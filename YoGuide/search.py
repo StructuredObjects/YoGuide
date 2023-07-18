@@ -1,9 +1,8 @@
 import sys
 
 from src.logger import *
-
 from src.yoguide.yoguide import *
-from src.yoguide.item_searches import *
+
 args = sys.argv;
 
 if len(args) < 2:
@@ -12,7 +11,7 @@ if len(args) < 2:
 
 query = f"{args}".replace("[", "").replace("]", "").replace("'", "").replace(",", "").replace(f"{args[0]} ", "").replace(f"{args[0]}", "");
 
-eng = YoworldEngine()
+eng = YoGuide()
 n = eng.Search(query);
 
 Logger.newLog(AppType.DESKTOP, LogTypes.SEARCH, query, "1.1.1.1");
@@ -23,10 +22,10 @@ if n == Response.NONE:
 
 elif n == Response.EXACT:
 
-    r = eng.getResults();
-    gg = ItemSearch.ywdbSearch(r[0]);
-    nn = ItemSearch.ywinfoSearch(r[0])
-    print(f"Item: {r[0].name} | {r[0].id} | {r[0].price} | {r[0].update} | {r[0].is_tradable}");
+    r = eng.getResults(n);
+    gg = ItemSearch.ywdbSearch(r);
+    nn = ItemSearch.ywinfoSearch(r)
+    print(f"Item: {r.name} | {r.id} | {r.price} | {r.update} | {r.is_tradable}");
     exit(0);
 
 elif n == Response.EXTRA:

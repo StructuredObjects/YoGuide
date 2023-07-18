@@ -2,7 +2,6 @@ import discord, requests, subprocess, json
 
 from src.discord_embed          import *
 from src.yoguide.yoguide        import *
-from src.yoguide.item_searches  import *
 
 class Config:
     prefix = "!"
@@ -123,25 +122,13 @@ class MyClient(discord.Client):
             results = eng.getResults(check);
 
             if check == Response.NONE:
-                if query.isdigit() or isinstance(query, int):
-                    n = YoGuide.newItem(["", f"{query}", "", "", ""])
-                    n.id = query;
-                    ywdb_item = ItemSearch.ywdbSearch(n, True, query);
-                    ywinfo_item = ItemSearch.ywinfoSearch(n);
-
-                    if n.name != "":
-                        gg = YoGuide.addInfo(ywdb_item, YoGuide.item2dict(ywdb_item));
-                        await self.client.displayItem("YoGuide | Item Search", "Item found!", gg, ywdb_item.url);
-                        YoGuide.add_new_item(ywdb_item)
-                        return;
-                    
                 await message.channel.send(embed=discord.Embed(title="YoGuide | Item Search", description="No items found....!", color=discord.Colour.red()));
 
             if check == Response.EXACT:
 
                 try: ItemSearch.ywdbSearch(results);
                 except: print("[ X ] Error, Unable to fetch extra info....!");
-
+                
                 gg = YoGuide.addInfo(results, YoGuide.item2dict(results));
                 await self.client.displayItem("YoGuide | Item Search", "Item found!", gg, results.url);
 
@@ -161,5 +148,5 @@ class MyClient(discord.Client):
 intents = discord.Intents.default()
 intents.message_content = True
 client = MyClient(intents=intents)
-client.run('')
+client.run('MTEyMTA0NDgxNDA3MTM0NTIyMw.GrG0f_.x24Hz8nm0ee0a3H9B-6BP3GC1qd2Uh-vNDozFY')
 
