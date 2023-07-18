@@ -1,2 +1,2 @@
-# Yoworld-Price-Guide
- Yoworld.site / Yoworld.world
+# YoGuide
+YoGuide.info
