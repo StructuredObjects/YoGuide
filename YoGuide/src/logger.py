@@ -1,10 +1,18 @@
 import os, enum, datetime
 
+from .user_crud import *
+
 class LogDBs:
     search      = "logs/searches.log";
     changes     = "logs/changes.log";
     visits      = "logs/visits.log";
     requests    = "logs/requests.log";
+
+class UserLogs:
+    u:      User;
+    data:   list;
+    def __init__(self, usr: User, data: list):
+        self.u = usr; self.data = data;
 
 class LogTypes(enum.Enum):
     NONE        = 0;
@@ -34,7 +42,7 @@ class Logger():
 
         if appt == AppType.BOT:
             ## Query
-            db.write(f"('{app}','{args[0]}','{current_time}')\n");
+            db.write(f"('{app}','{args[0]}','{args[1]}','{current_time}')\n");
         elif appt == AppType.SITE:
             ## Query, IP, Path (Domain Watch)
             db.write(f"('{app}','{args[0]}','{args[1]}','{args[2]}','{current_time}')\n");
@@ -62,8 +70,25 @@ class Logger():
         elif logt == LogTypes.SEARCH:
             return LogDBs.search;
         elif logt == LogTypes.CHANGE:
-            return LogDBs.change;
+            return LogDBs.changes;
         elif logt == LogTypes.REQUEST:
             return LogDBs.requests;
 
         return "";
+
+    @staticmethod
+    def fetch_user_logs(self, userid_or_ip: str) -> tuple[str, list]:
+        file = open("changes.log", "r");
+        lines = file.read().split("\n");
+        
+        """
+            ('APPTYPE','QUERY','USER_ID','CURRENTTIME')
+        """
+        list_of_logs = [];
+        for line in lines:
+            if "DISCORDBOT" in line:
+                info = line.replace("(", "").replace(")", "").replace("'", "").split(",");
+                if len(info) == 5:
+                    list_of_logs.append(info)
+
+        return UserLogs(Crud().searchUser(userid_or_ip), list_of_logs);

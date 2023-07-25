@@ -69,11 +69,10 @@ class YoGuide():
         """
         self.__searchByName();
     
-        if len(self.found) > 1:
+        if len(self.found) == 1:
+            if self.found[0].name != "": return Response.EXACT;
+        elif len(self.found) > 1:
             return Response.EXTRA;
-        elif len(self.found) == 1:
-            if self.found[0].name != "":
-                return Response.EXACT;
 
         return Response.NONE;
 
@@ -102,7 +101,7 @@ class YoGuide():
         for item in self.items:
             no_case_sen = self.query.lower();
 
-            if item.name == self.query: 
+            if f"{item.name}" == f"{self.query}": 
                 return [item];
 
             if self.query in item.name or no_case_sen in item.name.lower():
@@ -156,6 +155,33 @@ class YoGuide():
         newdb.close();
 
         return r;
+
+    @staticmethod
+    def bulk_update(lst: str) -> tuple[bool, str, str]:
+        lines = lst.split("\n")
+
+        changed = 0;
+
+        for line in lines:
+            if len(line) < 5: continue;
+            line_info = line.split(" ")
+            name = line.replace(" " + line_info[len(line_info)-1], "")
+            price = line_info[len(line_info)-1];
+
+            yg = YoGuide();
+            rtyp = yg.Search(name);
+            r = yg.getResults(rtyp);
+
+            if rtyp == Response.EXACT and r.name == name:
+                check = YoGuide.changePrice(r, price);
+                if check:
+                    changed += 1
+
+        failed = len(lines)-changed
+
+        if changed > 0: return True, failed, changed
+            
+        return False, failed, changed;
 
     @staticmethod
     def add_new_item(item: Item) -> bool:

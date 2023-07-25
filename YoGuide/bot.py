@@ -1,5 +1,6 @@
 import discord, requests, subprocess, json
 
+from src.logger                 import *
 from src.discord_embed          import *
 from src.yoguide.yoguide        import *
 
@@ -36,6 +37,19 @@ class MyClient(discord.Client):
         if msg == f"{Config.prefix}help":
             """ Help Command """
             await self.client.embed_w_fields("Help", "List Of Commands!", Config.help_list, "")
+            
+        if f"{Config.prefix}rate" in msg:
+            if len(msg_args) != 2:
+                await self.client.embed_w_fields("YC Rate Change | Error", f"Invalid arguments provided\nUsage {Config.prefix}rate <yc_rate>", {}, "");
+                return;
+            
+            Config.yc_rate = int(msg_args[1]);
+            await self.client.embed_w_fields("YC Rate Change", f"YC Rate successfull5y changed to {msg_args[1]}", {}, "");
+
+        if f"{Config.prefix}yc2c" in msg:
+            yc = msg_args[1];
+            converted = int(yc)*Config.yc_rate;
+            await self.client.embed_w_fields("YC 2 Coins", f"{yc}yc x {Config.yc_rate} = {converted}", {}, "");
 
         if f"{Config.prefix}fs" in msg:
             """ 
@@ -62,14 +76,6 @@ class MyClient(discord.Client):
                 
 
         # if msg == f"{Config.prefix}wtb"
-
-        if f"{Config.prefix}rate" in msg:
-            if len(msg_args) != 2:
-                await self.client.embed_w_fields("YC Rate Change | Error", f"Invalid arguments provided\nUsage {Config.prefix}rate <yc_rate>", {}, "");
-                return;
-            
-            Config.yc_rate = int(msg_args[1]);
-            self.client.embed_w_fields("YC Rate Change", f"YC Rate successfull5y changed to {msg_args[1]}", {}, "");
 
         if f"{Config.prefix}change" in msg:
             """ 
@@ -105,9 +111,17 @@ class MyClient(discord.Client):
             if not YoGuide.changePrice(r, new_price):
                 await self.client.embed_w_fields("YoGuide | Change", "Item could not be updated....! Contact owner for more info.", {}, "");
                 return;
+        
+            Logger.newLog(AppType.BOT, LogTypes.CHANGE, item_id, f"{message.author.id}");
 
-            await self.client.embed_w_fields("YoGuide | Change", f"Item: {r.name} sucessfully updated!",{}, "");
+            await self.client.embed_w_fields("YoGuide | Change", f"Item: {r.name} sucessfully updated!", {}, "");
 
+        elif f"{Config.prefix}update" in msg:
+            lst = msg.replace(f"{msg_args[0]} ", "").replace("```", "");
+        
+            chk, failed, changed = YoGuide.bulk_update(lst);
+            await self.client.embed_w_fields("YoGuide | Bulk Update", f"Results for the following list of items to update:\n\n```{lst}```", {"Update Status": [chk, False], "Items Failed To Update": [failed, False], "Successfully Updated Items": [changed, False]}, "https://images-ext-2.discordapp.net/external/-Vpwem0mrDhbSXF7d6otskf8aZRH97gKOT1T549B3xc/%3Fsize%3D1024/https/cdn.discordapp.com/icons/1110583722190831688/a77bb0aa24120f8733229797c4564402.png");
+        
 
         elif msg == f"{Config.prefix}search" or msg == f"{Config.prefix}search ": await message.channel.send(embed=discord.Embed(title="YoGuide | Item Search", description="Error, You must provide a item name or item ID...!\nUsage: !search <item_name_or_id>\nExample #1: !search cupids wing\nExample #2: !search 26295", color=discord.Colour.red()));
         elif f"{Config.prefix}search" in msg:
@@ -141,6 +155,9 @@ class MyClient(discord.Client):
                     c += 1;
 
                 await self.client.embed_w_fields("YoGuide | Item Search", f"{len(results)} Items found....!\n\nPlease note, If you need to view the image... just search the item by its ID listed under the name!", item_list, "https://images-ext-2.discordapp.net/external/-Vpwem0mrDhbSXF7d6otskf8aZRH97gKOT1T549B3xc/%3Fsize%3D1024/https/cdn.discordapp.com/icons/1110583722190831688/a77bb0aa24120f8733229797c4564402.png");
+        
+            
+            Logger.newLog(AppType.BOT, LogTypes.SEARCH, query, "NONE");
 
             
         print(f"\x1b[31m{message.author}: \x1b[33m{msg}\x1b[0m")
@@ -148,5 +165,5 @@ class MyClient(discord.Client):
 intents = discord.Intents.default()
 intents.message_content = True
 client = MyClient(intents=intents)
-client.run('MTEyMTA0NDgxNDA3MTM0NTIyMw.GrG0f_.x24Hz8nm0ee0a3H9B-6BP3GC1qd2Uh-vNDozFY')
+client.run('MTEyMTA0NDgxNDA3MTM0NTIyMw.GwiNKV.K4C-IdE3VbLXraHj8IvQb8Au52N0-E6e0X3GFI')
 
