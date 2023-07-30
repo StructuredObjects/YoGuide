@@ -90,6 +90,21 @@ pub fn yg_init() YoGuide
 	return yg
 }
 
+pub fn (mut yg YoGuide) is_id_in_db(int id) bool 
+{
+	for item in yg.items 
+	{ if item.id == id { return true } }
+	return false
+}
+
+pub fn add_new_item([]string arr) bool {
+	if arr.len != 5 { return false }
+	mut file := os.open_append(item_filepath) or { return false }
+	file.write("('${arr[0]}','${arr[1]}','${arr[2]}','${arr[3]}','${arr[4]}')\n") or { return false }
+	file.close()
+	return true
+} 
+
 pub fn (mut yg YoGuide) search(string q) Response
 {
 	yg.query = q
@@ -160,3 +175,28 @@ pub fn (mut yg YoGuide) update_item(Item itm, string new_price) ResultType
 
 	return found
 }
+
+/*
+import os
+import yoguide
+
+fn main() {
+	mut yg := yoguide.yg_init()
+
+	query = os.input("Item name or ID: ")
+
+	r = yg.search(query)
+
+	if r.r_type == .NONE {
+		println("[ X ] No items were found....!")
+	} else if r.r_type == .EXACT {
+		println("Item: ${r.results[0].name} | ${r.results[0].id} | ${r.results[0].price} | ${r.results[0].update}")
+	} else if r.r_type == .EXTRA {
+		for item in r.results
+		{
+			println("Item: ${item.name} | ${item.id} | ${item.price} ${item.update}")
+		}
+	}
+}
+
+*/
