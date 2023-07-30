@@ -193,9 +193,24 @@ fn main() {
 	r := yg.search(query)
 
 	if r.r_type == .NONE {
-		println("[ X ] No items were found....!")
+		println("[ X ] No items were found in DB....!")
+
+		if query.int() > 0 {
+			println("[ + ] Requesting yoworlddb.com for information...!")
+			item := yoguide.retrieve_item_info(yoguide.Item{id: query}, true)
+			if item.name == "" 
+			{ 
+				println("[ X ] Unable to retrieve information from yoworlddb.com or they do not have information for the item....!")
+				exit(0)
+			}
+			println("[ + ] Item: ${item.name} | ${item.id} | ${item.price} | ${item.update}")
+		}
+
 	} else if r.r_type == .EXACT { /* VALID ITEM IDS WILL ALWAYS FALL HERE */
+		yoguide.retrieve_item_info(mut r.results[0], false)
+		yoguide.retrieve_item_ywinfo_price(mut r.results[0], false)
 		println("Item: ${r.results[0].name} | ${r.results[0].id} | ${r.results[0].price} | ${r.results[0].update}")
+
 	} else if r.r_type == .EXTRA {
 		for item in r.results
 		{
