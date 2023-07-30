@@ -188,13 +188,13 @@ import yoguide
 fn main() {
 	mut yg := yoguide.yg_init()
 
-	query = os.input("Item name or ID: ")
+	query := os.input("Item name or ID: ")
 
-	r = yg.search(query)
+	r := yg.search(query)
 
 	if r.r_type == .NONE {
 		println("[ X ] No items were found....!")
-	} else if r.r_type == .EXACT {
+	} else if r.r_type == .EXACT { /* VALID ITEM IDS WILL ALWAYS FALL HERE */
 		println("Item: ${r.results[0].name} | ${r.results[0].id} | ${r.results[0].price} | ${r.results[0].update}")
 	} else if r.r_type == .EXTRA {
 		for item in r.results
@@ -202,6 +202,15 @@ fn main() {
 			println("Item: ${item.name} | ${item.id} | ${item.price} ${item.update}")
 		}
 	}
+
+	/* Updating an item (Only works with Item ID for exact item) */
+	update_check := yg.update_item(r.results[0])
+	if update_check == false {
+		println("[ X ] Error, Unable to update item...!")
+		exit(0)
+	}
+
+	println("[ + ] Item ${r.results[0].name} successfully updated...!")
 }
 
 */
