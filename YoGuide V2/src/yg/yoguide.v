@@ -219,7 +219,7 @@ fn main() {
 	}
 
 	/* Updating an item (Only works with Item ID for exact item) */
-	update_check := yg.update_item(r.results[0])
+	update_check := yg.update_item(r.results[0], "400m")
 	if update_check == false {
 		println("[ X ] Error, Unable to update item...!")
 		exit(0)
