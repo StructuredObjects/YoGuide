@@ -1,6 +1,7 @@
 module yg
 
 import os
+import time
 
 const item_filepath = "/root/api/items.txt"
 
@@ -42,7 +43,8 @@ pub struct Item
 
 pub struct YoGuide
 {
-	query			string
+	mut:
+		query			string
 
 	pub mut:
 		items		[]Item
@@ -74,9 +76,9 @@ pub fn yg_init() YoGuide
 	*/
 	mut yg 		:= YoGuide{}
 	items_db 	:= os.read_lines("items.txt") or { [] }
-	if item_db == [] { return YoGuide{} } // if yg_init() == YoGuide{} { println("no db or items found...!") }
+	if items_db == [] { return YoGuide{} } // if yg_init() == YoGuide{} { println("no db or items found...!") }
 
-	for line in lines 
+	for line in items_db 
 	{
 		if line.len < 4 { continue }
 		info := line.replace("(", "").replace(")", "").replace("'", "").split(",")
@@ -106,7 +108,7 @@ pub fn add_new_item(arr []string) bool
 {
 	if arr.len != 5 { return false }
 	mut file := os.open_append(item_filepath) or { return false }
-	file.write("('${arr[0]}','${arr[1]}','${arr[2]}','${arr[3]}','${arr[4]}')\n") or { return false }
+	file.write("('${arr[0]}','${arr[1]}','${arr[2]}','${arr[3]}','${arr[4]}')\n".bytes()) or { return false }
 	file.close()
 	return true
 } 
@@ -125,7 +127,7 @@ pub fn (mut yg YoGuide) search(q string) Response
 
 	yg.search_by_name()
 
-	if yg.found.len == 1 && yg.found[0] != "" { 
+	if yg.found.len == 1 && yg.found[0].name != "" { 
 		return Response{r_type: ResultType._exact, results: yg.found}
 	}
 	
@@ -164,7 +166,7 @@ fn (mut yg YoGuide) search_by_id() Item
 pub fn (mut yg YoGuide) update_item(itm Item, new_price string) ResultType
 {
 	mut found 		:= ResultType._item_failed_to_update
-	new_db 			:= ""
+	mut new_db 		:= ""
 	current_time 	:= "${time.now()}".replace("-", "/").replace(" ", "-")
 
 	for item in yg.items
