@@ -67,6 +67,11 @@ pub struct Response
 
 pub fn yg_init() YoGuide
 {
+	/*
+		Reading a file with item information in lines with the following syntax
+
+		('ITEM_NAME','ITEM_ID','ITEM_IMGURL','ITEM_PRICE','ITEM_LASTUPDATE')
+	*/
 	mut yg 		:= YoGuide{}
 	items_db 	:= os.read_lines("items.txt") or { [] }
 	if item_db == [] { return YoGuide{} } // if yg_init() == YoGuide{} { println("no db or items found...!") }
