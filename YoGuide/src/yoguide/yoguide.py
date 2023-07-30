@@ -68,6 +68,7 @@ class YoGuide():
             Search for item name in our database!
         """
         self.__searchByName();
+        print(f"{len(self.found)} {self.found[0].name}");
     
         if len(self.found) == 1:
             if self.found[0].name != "": return Response.EXACT;
@@ -99,25 +100,12 @@ class YoGuide():
     def __searchByName(self) -> list[Item]:
         self.found = []
         for item in self.items:
-            no_case_sen = self.query.lower();
-
-            if f"{item.name}" == f"{self.query}": 
+            if item.name == self.query:
                 return [item];
-
-            if self.query in item.name or no_case_sen in item.name.lower():
+                
+            if self.query.lower() in item.name.lower():
                 self.found.append(item);
-                continue;
-
-            if " " in self.query:
-                words = no_case_sen.split(" ")
-                matchh = 0;
-                for word in words:
-                    if word in item.name:
-                        matchh += 1;
-
-                        if matchh > 1:
-                            self.found.append(item);
-                            continue;
+        
         return self.found
     
     def __searchByID(self) -> Item:

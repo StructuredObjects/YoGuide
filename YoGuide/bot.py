@@ -112,9 +112,9 @@ class MyClient(discord.Client):
                 await self.client.embed_w_fields("YoGuide | Change", "Item could not be updated....! Contact owner for more info.", {}, "");
                 return;
         
-            Logger.newLog(AppType.BOT, LogTypes.CHANGE, item_id, f"{message.author.id}");
 
             await self.client.embed_w_fields("YoGuide | Change", f"Item: {r.name} sucessfully updated!", {}, "");
+            Logger.newLog(AppType.BOT, LogTypes.CHANGE, item_id, f"{message.author.id}");
 
         elif f"{Config.prefix}update" in msg:
             lst = msg.replace(f"{msg_args[0]} ", "").replace("```", "");
@@ -136,6 +136,7 @@ class MyClient(discord.Client):
             results = eng.getResults(check);
 
             if check == Response.NONE:
+                print(f"{len(eng.found)} {results[0].id}")
                 await message.channel.send(embed=discord.Embed(title="YoGuide | Item Search", description="No items found....!", color=discord.Colour.red()));
 
             if check == Response.EXACT:
@@ -157,7 +158,7 @@ class MyClient(discord.Client):
                 await self.client.embed_w_fields("YoGuide | Item Search", f"{len(results)} Items found....!\n\nPlease note, If you need to view the image... just search the item by its ID listed under the name!", item_list, "https://images-ext-2.discordapp.net/external/-Vpwem0mrDhbSXF7d6otskf8aZRH97gKOT1T549B3xc/%3Fsize%3D1024/https/cdn.discordapp.com/icons/1110583722190831688/a77bb0aa24120f8733229797c4564402.png");
         
             
-            Logger.newLog(AppType.BOT, LogTypes.SEARCH, query, "NONE");
+            Logger.newLog(AppType.BOT, LogTypes.SEARCH, f"{message.author.id}", query, check, len(results));
 
             
         print(f"\x1b[31m{message.author}: \x1b[33m{msg}\x1b[0m")
@@ -165,5 +166,5 @@ class MyClient(discord.Client):
 intents = discord.Intents.default()
 intents.message_content = True
 client = MyClient(intents=intents)
-client.run('MTEyMTA0NDgxNDA3MTM0NTIyMw.GwiNKV.K4C-IdE3VbLXraHj8IvQb8Au52N0-E6e0X3GFI')
+client.run('MTEyMTA0NDgxNDA3MTM0NTIyMw.GRoXLB.v3tFkzI-mVpO2AIgVn3LRxUrKiG_WQPuOtqPmY')
 

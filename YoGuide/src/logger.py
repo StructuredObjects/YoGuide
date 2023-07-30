@@ -8,12 +8,6 @@ class LogDBs:
     visits      = "logs/visits.log";
     requests    = "logs/requests.log";
 
-class UserLogs:
-    u:      User;
-    data:   list;
-    def __init__(self, usr: User, data: list):
-        self.u = usr; self.data = data;
-
 class LogTypes(enum.Enum):
     NONE        = 0;
     VISIT       = 1;
@@ -41,10 +35,16 @@ class Logger():
         db = open(Logger.get_db_path(logt), "a");
 
         if appt == AppType.BOT:
-            ## Query
-            db.write(f"('{app}','{args[0]}','{args[1]}','{current_time}')\n");
+            """
+                ('DISCORDBOT','USER_ID','QUERY','RESULTTYPE','FOUND_COUNT','CURRENTTIME')
+                                   0       1          2            3
+            """
+            db.write(f"('{app}','{args[0]}','{args[1]}','{args[2]}','{args[3]}','{current_time}')\n");
         elif appt == AppType.SITE:
-            ## Query, IP, Path (Domain Watch)
+
+            """
+                ('SITE','IP_ADDR','QUERY','RESULTTYPE','FOUND_COUNT','CURRENTTIME')
+            """
             db.write(f"('{app}','{args[0]}','{args[1]}','{args[2]}','{current_time}')\n");
         elif appt == AppType.DESKTOP:
             ## Query, IP, PC_INFO
@@ -75,20 +75,3 @@ class Logger():
             return LogDBs.requests;
 
         return "";
-
-    @staticmethod
-    def fetch_user_logs(self, userid_or_ip: str) -> tuple[str, list]:
-        file = open("changes.log", "r");
-        lines = file.read().split("\n");
-        
-        """
-            ('APPTYPE','QUERY','USER_ID','CURRENTTIME')
-        """
-        list_of_logs = [];
-        for line in lines:
-            if "DISCORDBOT" in line:
-                info = line.replace("(", "").replace(")", "").replace("'", "").split(",");
-                if len(info) == 5:
-                    list_of_logs.append(info)
-
-        return UserLogs(Crud().searchUser(userid_or_ip), list_of_logs);
