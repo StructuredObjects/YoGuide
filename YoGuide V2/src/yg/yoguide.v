@@ -51,11 +51,11 @@ pub struct YoGuide
 
 pub enum ResultType
 {
-	NONE					= 0
-	EXACT 					= 1
-	EXTRA 					= 2
-	ITEM_FAILED_TO_UPDATE	= 3
-	ITEM_UPDATED			= 4
+	_none					= 0
+	_exact 					= 1
+	_extra 					= 2
+	_item_failed_to_update	= 3
+	_item_updated			= 4
 }
 
 pub struct Response
@@ -95,14 +95,15 @@ pub fn yg_init() YoGuide
 	return yg
 }
 
-pub fn (mut yg YoGuide) is_id_in_db(int id) bool 
+pub fn (mut yg YoGuide) is_id_in_db(id int) bool 
 {
 	for item in yg.items 
 	{ if item.id == id { return true } }
 	return false
 }
 
-pub fn add_new_item([]string arr) bool {
+pub fn add_new_item(arr []string) bool 
+{
 	if arr.len != 5 { return false }
 	mut file := os.open_append(item_filepath) or { return false }
 	file.write("('${arr[0]}','${arr[1]}','${arr[2]}','${arr[3]}','${arr[4]}')\n") or { return false }
@@ -110,27 +111,27 @@ pub fn add_new_item([]string arr) bool {
 	return true
 } 
 
-pub fn (mut yg YoGuide) search(string q) Response
+pub fn (mut yg YoGuide) search(q string) Response
 {
 	yg.query = q
 	if q.int() > 0 {
 		yg.found = [yg.search_by_id()]
 		if yg.found[0].name != "" {
-			return Response{r_type: ResultType.EXACT, results: yg.found}
+			return Response{r_type: ResultType._exact, results: yg.found}
 		}
 
-		return Response{r_type: ResultType.NONE}
+		return Response{r_type: ResultType._none}
 	}
 
 	yg.search_by_name()
 
 	if yg.found.len == 1 && yg.found[0] != "" { 
-		return Response{r_type: ResultType.EXACT, results: yg.found}
+		return Response{r_type: ResultType._exact, results: yg.found}
 	}
 	
-	if yg.found.len > 1 { return Response{r_type: ResultType.EXTRA, results: yg.found} }
+	if yg.found.len > 1 { return Response{r_type: ResultType._extra, results: yg.found} }
 
-	return Response{r_type: ResultType.NONE}
+	return Response{r_type: ResultType._none}
 }
 
 fn (mut yg YoGuide) search_by_name() []Item
@@ -160,9 +161,9 @@ fn (mut yg YoGuide) search_by_id() Item
 	return Item{}
 }
 
-pub fn (mut yg YoGuide) update_item(Item itm, string new_price) ResultType
+pub fn (mut yg YoGuide) update_item(itm Item, new_price string) ResultType
 {
-	mut found 		:= ResultType.ITEM_FAILED_TO_UPDATE
+	mut found 		:= ResultType._item_failed_to_update
 	new_db 			:= ""
 	current_time 	:= "${time.now()}".replace("-", "/").replace(" ", "-")
 
@@ -170,7 +171,7 @@ pub fn (mut yg YoGuide) update_item(Item itm, string new_price) ResultType
 	{
 		if item.id == itm.id {
 			new_db 	+= "('${item.name}','${item.id}','${item.url}','${new_price}','${current_time}')\n"
-			found 	= ResultType.ITEM_UPDATED
+			found 	= ResultType._item_updated
 		} else {
 			new_db 	+= "('${item.name}','${item.id}','${item.url}','${item.price}','${item.update}')\n"
 		}
@@ -192,7 +193,7 @@ fn main() {
 
 	r := yg.search(query)
 
-	if r.r_type == .NONE {
+	if r.r_type == ._none {
 		println("[ X ] No items were found in DB....!")
 
 		if query.int() > 0 {
@@ -206,12 +207,12 @@ fn main() {
 			println("[ + ] Item: ${item.name} | ${item.id} | ${item.price} | ${item.update}")
 		}
 
-	} else if r.r_type == .EXACT { /* VALID ITEM IDS WILL ALWAYS FALL HERE */
+	} else if r.r_type == ._exact { /* VALID ITEM IDS WILL ALWAYS FALL HERE */
 		yoguide.retrieve_item_info(mut r.results[0], false)
 		yoguide.retrieve_item_ywinfo_price(mut r.results[0], false)
 		println("Item: ${r.results[0].name} | ${r.results[0].id} | ${r.results[0].price} | ${r.results[0].update}")
 
-	} else if r.r_type == .EXTRA {
+	} else if r.r_type == ._extra {
 		for item in r.results
 		{
 			println("Item: ${item.name} | ${item.id} | ${item.price} ${item.update}")

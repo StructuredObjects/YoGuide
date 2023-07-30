@@ -3,7 +3,7 @@ module yg
 import x.json2 as jsn
 import net.http as web
 
-pub fn retrieve_item_info(mut Item itm, bool add_main) Item
+pub fn retrieve_item_info(mut itm Item, add_main bool) Item
 {
 	data := {'id': itm.id}
 	resp := web.post_form("https://yoworlddb.com/scripts/getItemInfo.php", data)
@@ -44,7 +44,7 @@ pub fn retrieve_item_info(mut Item itm, bool add_main) Item
 	return itm
 }
 
-pub fn retrieve_item_ywinfo_price(mut Item itm, bool add_main) Item
+pub fn retrieve_item_ywinfo_price(mut itm Item, add_main bool) Item
 {
 	resp = web.get_text("https://api.yoworld.info/api/items/${itm.id}")
 
