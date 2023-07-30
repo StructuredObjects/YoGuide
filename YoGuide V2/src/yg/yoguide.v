@@ -10,26 +10,26 @@ pub struct Item
 		/*
 			General Item Information
 		*/
-		name   				string
-		id     				int
-		url    				string
-		price  				string
-		update 				string
+		name				string
+		id					int
+		url					string
+		price				string
+		update				string
 
 		/*
 			Actions you can do with the ITEM
 		*/
-		is_tradable 		int
-		is_giftable 		int
+		is_tradable			int
+		is_giftable			int
 
 		/*
 			In-store Information
 		*/
-		in_store    		bool
-		store_price 		string
-		gender      		string
-		xp          		string
-		category    		string
+		in_store			bool
+		store_price			string
+		gender				string
+		xp					string
+		category			string
 
 		/*
 			Extra Info
@@ -54,8 +54,8 @@ pub enum ResultType
 	NONE					= 0
 	EXACT 					= 1
 	EXTRA 					= 2
-	ITEM_FAILED_TO_UPDATE 	= 3
-	ITEM_UPDATED 			= 4
+	ITEM_FAILED_TO_UPDATE	= 3
+	ITEM_UPDATED			= 4
 }
 
 pub struct Response
