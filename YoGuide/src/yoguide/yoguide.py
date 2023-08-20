@@ -68,7 +68,7 @@ class YoGuide():
             Search for item name in our database!
         """
         self.__searchByName();
-        print(f"{len(self.found)} {self.found[0].name}");
+        # print(f"{len(self.found)} {self.found[0].name}");
     
         if len(self.found) == 1:
             if self.found[0].name != "": return Response.EXACT;

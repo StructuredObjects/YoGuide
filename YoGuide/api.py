@@ -72,4 +72,4 @@ def search():
   
 if __name__ == '__main__':
     ip = requests.get("https://api.ipify.org").text
-    app.run(host=ip, port=80)
+    app.run(host="0.0.0.0", port=80)

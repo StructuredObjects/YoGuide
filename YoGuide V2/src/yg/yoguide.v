@@ -122,6 +122,12 @@ pub fn (mut yg YoGuide) search(q string) Response
 			return Response{r_type: ResultType._exact, results: yg.found}
 		}
 
+		new_item := retrieve_item_info(Item{id: yg.query.int()}, true)
+		if new_item.name != "" {
+			retrieve_item_ywinfo_price(new_item, false)
+			return Response{r_type: ResultType._exact, results: yg.found}
+		}
+
 		return Response{r_type: ResultType._none}
 	}
 
